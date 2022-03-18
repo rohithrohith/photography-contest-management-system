@@ -1,0 +1,395 @@
+{% extends 'template/template.html' %}
+{% block title %}
+Signin
+{% endblock %}
+
+{% block style %}
+<style>
+    .container {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+
+    .signin-brand {
+        position: absolute;
+        top: 20px;
+        left: 20px;
+        font-weight: bold;
+        letter-spacing: 0.1em;
+        display: flex;
+        align-items: center;
+    }
+
+    nav {
+        display: none !important;
+    }
+
+    .signin-block {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        min-width: 700px;
+        min-height: 400px;
+    }
+
+    .banner-overlay {
+        background: rgba(0, 0, 0, 0.6);
+        position: absolute;
+        top: 0;
+        left: 0;
+        height: 100%;
+        width: 100%;
+        padding: 20px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+    }
+
+    .signin-banner {
+        position: relative;
+        background: url("/static/images/signin-register-bg.jpg") no-repeat no-repeat;
+        background-position: center;
+        background-size: cover;
+        color: white;
+    }
+
+    .banner-head {
+        font-size: 40px;
+    }
+
+    .banner-tag {
+        margin: 10px 0 0 0;
+    }
+
+    .banner-p {
+        font-size: 14px;
+    }
+
+    .form-div {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100%;
+    }
+
+    .signin-form {
+        display: flex;
+        background: white;
+        justify-content: center;
+        flex-direction: column;
+        padding: 20px;
+        width: 100%;
+        color: black;
+        box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+    }
+
+    .signin-form h1 {
+        margin-bottom: 10px;
+    }
+
+    .form-control {
+        display: flex;
+        flex-direction: column;
+        position: relative;
+        margin: 15px 0;
+    }
+
+    .form-label {
+        position: absolute;
+        top: 20px;
+        font-size: 14px;
+        pointer-events: none;
+        height: 100%;
+        width: 100%;
+        letter-spacing: 1px;
+        cursor: text;
+        transition: 0.2s ease;
+    }
+
+    .form-input {
+        padding: 15px 10px 5px 0;
+        outline: none;
+        height: 50px;
+        font-size: 16px;
+        border: none;
+        border-bottom: 2px solid var(--themeOrange);
+        width: 100%;
+        border-radius: 0;
+    }
+
+    .form-input:focus {
+        background: white;
+    }
+
+    .form-input:focus+.form-label,
+    .form-input:not(:placeholder-shown)+.form-label {
+        top: 0 !important;
+        font-size: 12px !important;
+    }
+
+    .form-input:not(:placeholder-shown):invalid {
+        border-bottom: red 2px solid;
+    }
+
+    .password-input:not(:placeholder-shown):invalid {
+        border-bottom: var(--themeOrange) 2px solid;
+    }
+
+    .form-input:empty+.form-label {
+        top: 20px;
+        color: black;
+    }
+
+    .links {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .login-button {
+        margin: 10px 0;
+        padding: 10px;
+        background-color: darkorange;
+        border: darkorange 2px solid;
+        color: white;
+        font-weight: bold;
+        letter-spacing: 1px;
+        cursor: pointer;
+        border-radius: 2px;
+    }
+
+    .login-button:hover {
+        background-color: white;
+        color: darkorange;
+    }
+
+    .forgot-password,
+    .register {
+        color: black;
+        margin-top: 10px;
+        width: fit-content;
+        font-size: 0.8rem;
+    }
+
+    .forgot-password:hover,
+    .register:hover {
+        text-decoration: underline;
+    }
+
+    .signin-type-btns {
+        height: 50px;
+        display: grid;
+        grid-template-columns: 50% 50%;
+        align-items: center;
+        margin-bottom: 20px;
+        background: whitesmoke;
+    }
+
+    .signin-type-btn {
+        margin: 0 2px;
+        height: 100%;
+        font-size: 15px;
+        border: none;
+        background: none;
+        cursor: pointer;
+        border-bottom: 4px solid whitesmoke;
+    }
+
+    .active-btn {
+        border-bottom: 4px solid orange;
+        cursor: initial;
+    }
+
+    .login-button:disabled {
+        background: var(--themeOrange);
+        opacity: 0.8;
+        color: white;
+        cursor: not-allowed;
+    }
+
+    .login-button:disabled:hover {
+        background: var(--themeOrange);
+        color: white;
+        cursor: not-allowed;
+        opacity: 0.8;
+    }
+
+    .loading {
+        animation: spin 1s forwards infinite ease;
+    }
+
+    .forgot-password-modal {
+        position: absolute;
+        top: 70px;
+        left: 0;
+        width: 100%;
+        height: calc(100% - 70px);
+        background: white;
+        display: none;
+        flex-direction: column;
+        align-items: center;
+        z-index: 10;
+        justify-content: center;
+    }
+
+    .forgot-form-input {
+        width: 300px;
+    }
+
+    .forgot-otp-form {
+        display: none;
+    }
+
+    .forgot-cancel-btn {
+        background: none;
+        padding: 5px;
+        border: 1px solid black;
+    }
+
+    @keyframes spin {
+        from {
+            transform: rotateZ(0deg);
+        }
+
+        to {
+            transform: rotateZ(360deg);
+        }
+    }
+
+    footer {
+        display: none !important;
+    }
+</style>
+{% endblock %}
+
+{% block body %}
+<a href="/" class="signin-brand">CAPTURE
+    <img src="/static/images/darkLogo.svg" style="width: 30px; margin-left: 5px;" alt="logo">
+</a>
+<div class="forgot-password-modal" id="forgot-password-modal">
+    <form action="/forgotpassword" method="post">
+        <h1>Forgot password</h1>
+        <div class="forgot-mail-form" id="forgot-mail-form">
+            <div class="form-control">
+                <input type="email" name="forgot-email" id="forgot-email" class="forgot-form-input form-input"
+                    placeholder=" " required />
+                <label for="forgot-email" class="form-label" id="forgot-email">Enter your registered E-mail
+                </label>
+            </div>
+            <button class="login-button" type="button" id="get-otp-btn" onclick="validateMail(this)">Get OTP</button>
+        </div>
+    </form>
+    <form class="forgot-otp-form" id="forgot-otp-form" action="/forgotpassword" method="post">
+        <div class="form-control">
+            <input type="text" pattern="([0-9]+){6}" maxlength="6" name="forgot-otp" id="forgot-otp"
+                class="forgot-form-input form-input" placeholder=" " required />
+            <label for="forgot-otp" class="form-label">Enter OTP sent to your mail
+            </label>
+        </div>
+        <input type="hidden" name="email" id="forgot-mail-input">
+        <div class="form-control">
+            <input type="password" name="password" id="forgot-password"
+                oninvalid="this.setCustomValidity('must contain 6 or more characters that are of at least one number, and one uppercase and lowercase letter')"
+                oninput="this.setCustomValidity('')" pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{6,}"
+                class="form-input password-input" placeholder=" " required />
+            <label for="password" class="form-label">New password</label>
+        </div>
+
+        <div class="form-control">
+            <input type="password" name="confirm-password"
+                oninvalid="this.setCustomValidity('must contain 6 or more characters that are of at least one number, and one uppercase and lowercase letter')"
+                oninput="this.setCustomValidity('')" pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{6,}"
+                id="forgot-confirm-password" class="form-input password-input" placeholder=" " required />
+            <label for="confirm-password" class="form-label">Confirm new password</label>
+        </div>
+        <button class="login-button" type="submit" id="change-password-btn">Change password</button>
+    </form>
+    <button class="forgot-cancel-btn" onclick="cancelForgotPassword()">Cancel</button>
+</div>
+<div class=" signin-block">
+    <div class="signin-banner">
+        <div class="banner-overlay">
+            <h1 class="banner-head">
+                CAPTURE
+            </h1>
+            <h3 class="banner-tag">
+                Welcome back!
+            </h3>
+            <p class="banner-p">
+                Login to continue to your account.
+            </p>
+        </div>
+    </div>
+    <div class="signin-form">
+        <h1>Sign In</h1>
+        <form method="POST" action="/signin" class="form" id="form">
+            <div class="form-control">
+                <input type="text" name="email-or-username" id="signin-id" class="form-input" placeholder=" " required
+                    oninput="this.setCustomValidity('')"
+                    oninvalid="this.setCustomValidity('Enter a valid Username or E-mail')" />
+                <label for="signin-id" class="form-label" id="name">E-mail or User name
+                </label>
+            </div>
+            <div class="form-control">
+                <input type="password" name="password" id="password" class="form-input password-input" placeholder=" "
+                    required />
+                <label for="password" class="form-label">Password</label>
+            </div>
+            <button class="login-button" type="submit" id="submit-btn">Log In</button>
+            <div class="links">
+                <span class="forgot-password" style="cursor: pointer;"
+                    onclick="document.getElementById('forgot-password-modal').style.display = 'flex';">forgot
+                    password?</span>
+                <a href="/register" class="register">Register Here</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block script %}
+<script>
+    const getOtpBtn = document.getElementById('get-otp-btn')
+    const signinForm = document.getElementById('form')
+    const changePassBtn = document.getElementById('change-password-btn')
+    const forgotMailDiv = document.getElementById('forgot-mail-form')
+    const forgotOtpDiv = document.getElementById('forgot-otp-form')
+    const forgotMail = document.getElementById('forgot-email')
+    signinForm.addEventListener('submit', () => {
+        document.getElementById('submit-btn').disabled = true
+        document.getElementById('submit-btn').innerHTML = `<i class="fas fa-spinner loading"></i>Please wait...`
+    }, false)
+
+    function validateMail(btn) {
+        if (forgotMail.checkValidity()) {
+            this.disabled = true
+            let xhr = new XMLHttpRequest()
+            xhr.open('POST', '/getotp', true)
+            xhr.send(forgotMail.value)
+            xhr.onreadystatechange = function () {
+                if (this.readyState == 4 && this.status == 200) {
+                    if (this.responseText == "False") {
+                        Flash("User with given E-mail doesn't exists! Please register")
+                        btn.disabled = false
+                    } else {
+                        forgotMailDiv.style.display = "none"
+                        forgotOtpDiv.style.display = "block"
+                        document.getElementById('forgot-mail-input').value = this.responseText
+                    }
+                }
+            }
+        }
+        else {
+            Flash("Invalid Email")
+        }
+    }
+
+    function cancelForgotPassword() {
+        document.getElementById('forgot-password-modal').style.display = 'none'
+        forgotMailDiv.style.display = "block"
+        forgotMail.value = ''
+        forgotOtpDiv.style.display = "none"
+    }
+</script>
+{% endblock %}

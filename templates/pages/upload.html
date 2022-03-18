@@ -1,0 +1,392 @@
+{% extends 'template/template.html' %}
+{% block title %}
+Capture | Dashboard
+{% endblock %}
+
+{% block style %}
+<style>
+    .container {
+        padding: 70px 100px 0 100px;
+    }
+
+    .upload-form {
+        display: flex;
+        justify-content: center;
+        flex-direction: column;
+        padding: 20px;
+        padding-left: 0;
+        background: rgb(247, 247, 247);
+    }
+
+    body,
+    html {
+        height: 100%;
+        color: black;
+        background: rgb(247, 247, 247);
+    }
+
+    .form-control {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        position: relative;
+        margin: 15px 0;
+    }
+
+    .form-label {
+        position: absolute;
+        top: 20px;
+        font-size: 14px;
+        pointer-events: none;
+        height: 100%;
+        width: 100%;
+        letter-spacing: 1px;
+        cursor: text;
+        transition: 0.2s ease;
+    }
+
+    .form-input {
+        padding: 15px 10px 5px 0;
+        width: 100%;
+        outline: none;
+        height: 50px;
+        font-size: 16px;
+        border: none;
+        border-bottom: 2px solid var(--themeOrange);
+        width: 400px;
+        border-radius: 0;
+        background: none;
+    }
+
+    .form-input:focus+.form-label,
+    .form-input:not(:placeholder-shown)+.form-label {
+        top: 0 !important;
+        font-size: 12px !important;
+    }
+
+    .form-input:not(:placeholder-shown):invalid {
+        border-bottom: red 2px solid;
+    }
+
+    .password-input:not(:placeholder-shown):invalid {
+        border-bottom: var(--themeOrange) 2px solid;
+    }
+
+    .form-input:empty+.form-label {
+        top: 20px;
+        color: black;
+    }
+
+    .photo-upload-progess {
+        padding: 10px;
+        width: 400px;
+        height: 75px;
+        display: none;
+        align-items: center;
+        margin-bottom: 20px;
+        box-shadow: 0 1px 8px 0 rgba(0, 0, 0, 0.2), 0 1px 4px 0 rgba(0, 0, 0, 0.19);
+    }
+
+    .file-icon {
+        font-size: 30px;
+        margin-right: 20px;
+        color: #3d3d3d;
+    }
+
+    .progress-container {
+        width: 100%;
+    }
+
+    .progress-bar {
+        background: #d4d4d4;
+        height: 6px;
+        width: 100%;
+    }
+
+    .file-info {
+        font-size: 13px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 5px;
+    }
+
+    .status {
+        font-size: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .done {
+        color: green;
+        font-weight: bold;
+    }
+
+    .progress {
+        background: #6d6d6d;
+        height: 100%;
+        width: 0;
+        transition: .2s ease;
+    }
+
+    .upload-files {
+        border-bottom: none;
+        margin-bottom: 10px;
+        position: absolute;
+        height: 100%;
+        width: 100%;
+        opacity: 0;
+    }
+
+    .file-remove-btn {
+        margin-left: 10px;
+        background: none;
+        cursor: pointer;
+        border: none;
+        color: grey;
+    }
+
+    .upload-button {
+        padding: 10px 20px;
+        background: #3d3d3d;
+        color: white;
+        cursor: pointer;
+        border-radius: 5px;
+        border: #3d3d3d solid 2px;
+    }
+
+    .upload-button:hover {
+        color: #3d3d3d;
+        background-color: white;
+        border: #3d3d3d solid 2px;
+    }
+
+    .disabled-upload-button {
+        opacity: 0.7;
+        cursor: not-allowed;
+    }
+
+    .disabled-upload-button:hover {
+        background: #3d3d3d;
+        color: white;
+    }
+
+    .file-upload-div {
+        border: #3d3d3d solid 2px;
+        width: 400px;
+        border-radius: 5px;
+        height: 80px;
+    }
+
+    .upload {
+        position: absolute;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        height: 100%;
+        width: 100%;
+        pointer-events: none;
+        gap: 5px;
+    }
+
+    .upload-form-control {
+        position: relative;
+        width: fit-content;
+    }
+
+    .preview-img {
+        max-width: 400px;
+        margin-bottom: 20px;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        transition: 0.2s ease-in-out;
+    }
+
+    .preview {
+        max-width: 400px;
+    }
+
+    footer {
+        display: none !important;
+    }
+
+    @media screen and (max-width:900px) {
+        .container {
+            padding: 70px 10px 10px 10px;
+        }
+    }
+
+    @media screen and (max-width:400px) {
+        .form-input {
+            width: 300px;
+        }
+
+        .photo-upload-progess {
+            width: 300px;
+        }
+
+        .file-upload-div {
+            width: 300px;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block body %}
+<div class="upload-photos">
+    <div class="upload-form">
+        <h1 class="student-port">Make your entry</h1>
+        <form action="" method="POST" id="form" class="form" enctype="multipart/form-data">
+            <div class="form-control">
+                <input type="text" id="name" class="form-input" autocapitalize="words" autofocus name="file-title"
+                    placeholder=" " required />
+                <label for="name" class="form-label">Image Title</label>
+            </div>
+
+            <div class="photo-upload-progess" id="photo-upload-progress">
+                <div class="file-icon"><i class="fas fa-file-image"></i></div>
+                <div class="progress-container">
+                    <div class="file-info">
+                        <div class="file-name" id="file-name">
+                        </div>
+                        <div class="status">
+                            Uploading
+                        </div>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress" id="progress"></div>
+                    </div>
+                </div>
+                <div class="file-remove" id="file-remove">
+                    <button id="file-remove-btn" class="file-remove-btn" type="button" disabled><i
+                            class="fas fa-trash"></i></button>
+                </div>
+            </div>
+
+            <div class="form-control upload-form-control" id="upload-form-control">
+                <div class="file-upload-div">
+                    <input type="file" id="file-input" class="form-input upload-files" name="file" required />
+                    <div class="upload">
+                        <span class="upload-span">Choose or drag and drop file </span>
+                        <span>
+                            <i class="fas fa-plus"></i>
+                        </span>
+                    </div>
+                </div>
+            </div>
+            <div style="margin-bottom: 10px; margin-top: -10px; color :grey; font-size: 14px;">
+                Supported file formats:
+                {% for format in formats %}
+                <span style="text-transform: uppercase;">{{format.format | safe}}</span>
+                {% endfor %}
+            </div>
+            <div class="preview-img">
+                <img src="https://media.flaticon.com/dist/min/img/collections/collection-tour.svg" alt="Preview"
+                    class="preview">
+            </div>
+            <input type="hidden" name="db-filename-input" id="db-filename-input">
+            <div class="uplaod-here">
+                <input class="upload-button disabled-upload-button" type="submit" id="upload-btn" value="Submit"
+                    disabled />
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block script %}
+<script>
+    const fileInput = document.getElementById('file-input')
+    const fileInputContainer = document.getElementById('upload-form-control')
+    const uploadProgress = document.getElementById('photo-upload-progress')
+    const progress = document.getElementById('progress')
+    const status = document.querySelector('.status')
+    const fileName = document.getElementById('file-name')
+    const fileRemoveBtn = document.getElementById('file-remove-btn')
+    const dbFilename = document.getElementById('db-filename-input')
+    const uploadButton = document.getElementById('upload-btn')
+
+    fileInput.addEventListener('change', ({ target }) => {
+        let file = target.files[0]
+        if (file) {
+            const reader = new FileReader()
+            fileInputContainer.style.display = 'none'
+            uploadProgress.style.display = 'flex'
+            fileName.textContent = String(file.name).substring(0, 20) + "..."
+
+            let xhr = new XMLHttpRequest()
+            xhr.open('POST', '/uploadimage/{{cid | safe}}')
+            xhr.upload.addEventListener('progress', ({ loaded, total }) => {
+                let fileLoaded = Math.floor((loaded / total) * 100)
+                let fileTotal = Math.floor(total / 1000)
+                progress.style.width = `${fileLoaded}%`
+                if (fileLoaded == 100) {
+                    status.innerHTML = `Done <i class="far fa-check-circle" style="margin-left:5px;"></i>`
+                    document.querySelector('.preview-img').style.display = "flex"
+                    reader.addEventListener('load', () => document.querySelector('.preview').src = reader.result, false)
+                    status.classList.add('done')
+                    fileRemoveBtn.disabled = false
+                    fileRemoveBtn.style.color = 'red'
+                    reader.readAsDataURL(file)
+                    setFooter()
+                }
+            }, false)
+            let formData = new FormData(form)
+            xhr.send(formData)
+            xhr.onreadystatechange = function () {
+                if (this.readyState == 4 && this.status == 200) {
+                    let res = this.responseText
+                    if (res == "-1") {
+                        Flash("File format not supported!")
+                        dbFilename.value = ''
+                        fileInput.value = ''
+                        fileInputContainer.style.display = 'flex'
+                        uploadProgress.style.display = 'none'
+                        fileName.textContent = 'file'
+                        document.querySelector('.preview-img').style.display = "none"
+                    } else if (res == "0") {
+                        Flash("Something went wrong! please try again")
+                        dbFilename.value = ''
+                        fileInput.value = ''
+                        fileInputContainer.style.display = 'flex'
+                        uploadProgress.style.display = 'none'
+                        fileName.textContent = 'file'
+                        document.querySelector('.preview-img').style.display = "none"
+                    }
+                    else {
+                        dbFilename.value = res
+                        uploadButton.classList.remove('disabled-upload-button')
+                        uploadButton.disabled = false
+                    }
+
+                }
+            };
+        }
+    })
+
+    fileRemoveBtn.addEventListener('click', () => {
+        let xhr = new XMLHttpRequest()
+        xhr.open('GET', `/deleteimage?file=${dbFilename.value}`)
+        xhr.send()
+        xhr.onreadystatechange = function () {
+            if (this.readyState == 4 && this.status == 200) {
+                if (this.responseText == "True") {
+                    fileInputContainer.style.display = 'block'
+                    fileName.textContent = ''
+                    uploadProgress.style.display = 'none'
+                    uploadButton.disabled = true
+                    uploadButton.classList.add('disabled-upload-button')
+                    fileInput.value = ''
+                    document.querySelector('.preview').src = "https://media.flaticon.com/dist/min/img/collections/collection-tour.svg"
+                    document.querySelector('.preview-img').style.display = "none"
+                } else {
+                    Flash("Something went wrong! please try again")
+                }
+            }
+        }
+    })
+</script>
+{% endblock %}

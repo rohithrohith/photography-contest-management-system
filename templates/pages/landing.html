@@ -1,0 +1,430 @@
+{% extends 'template/template.html' %}
+{% block title %}
+Capture
+{% endblock %}
+
+{% block style %}
+<style>
+    .container {
+        padding-top: 0;
+    }
+
+    .landing {
+        height: 70vh;
+        position: relative;
+    }
+
+    .video {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .overlay {
+        background: rgba(0, 0, 0, 0.6);
+        position: absolute;
+        top: 0;
+        left: 0;
+        height: 100%;
+        width: 100%;
+    }
+
+    .rp-head {
+        margin: 15px;
+    }
+
+    .photos {
+        padding: 0 15px;
+        flex-wrap: wrap;
+        display: flex;
+        display: -ms-flexbox;
+        -ms-flex-wrap: wrap;
+        position: relative;
+    }
+
+    .photo-column {
+        -ms-flex: 25%;
+        flex: 25%;
+        max-width: 25%;
+        padding: 0 4px;
+    }
+
+    .photo {
+        margin-top: 8px;
+        vertical-align: middle;
+        width: 100%;
+        position: relative;
+    }
+
+    .photo .image {
+        width: 100%;
+        display: block;
+    }
+
+    .photo-details {
+        justify-content: space-between;
+        align-items: flex-end;
+        color: white;
+        padding: 10px;
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        display: none;
+    }
+
+    .photo:hover .photo-details {
+        background: rgba(0, 0, 0, 0.4);
+        display: flex;
+    }
+
+    .image-action {
+        display: flex;
+        justify-content: space-between;
+        width: 45px;
+        color: white;
+    }
+
+    .image-title,
+    .add-to-collection i,
+    .image-download i {
+        font-size: 13px;
+        cursor: pointer;
+        color: white;
+    }
+
+    .image-title {
+        text-transform: capitalize;
+    }
+
+    .image-card {
+        position: fixed;
+        background: rgba(0, 0, 0, 0.8);
+        top: 0;
+        left: 0;
+        height: 100%;
+        width: 100%;
+        z-index: 10;
+        padding: 20px;
+        overflow: scroll;
+        display: none;
+        flex-direction: column;
+    }
+
+    .image-card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 20px;
+        background: white;
+        color: black;
+        text-transform: capitalize;
+        border-radius: 10px 10px 0 0;
+        border-bottom: 0.1em solid #1f1f1f;
+    }
+
+    .header-left {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .header-right {
+        cursor: pointer;
+    }
+
+    .image-card-title {
+        font-size: 18px;
+    }
+
+    .user-name {
+        font-size: 12px;
+    }
+
+    .image-card-close {
+        font-size: 30px;
+        font-weight: 600;
+    }
+
+    .image-div {
+        width: 100%;
+        background: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 20px 100px;
+    }
+
+    .image-card-image {
+        object-fit: cover;
+        max-width: 400px;
+        display: block;
+    }
+
+    .image-card-footer {
+        border-radius: 0 0 10px 10px;
+        background: white;
+        display: flex;
+        padding: 10px;
+        align-items: center;
+        border-top: 0.1em solid #1f1f1f;
+        justify-content: center;
+    }
+
+    .image-card-btn {
+        margin: 0 10px;
+        border: none;
+    }
+
+    .image-card-btn a {
+        color: white;
+        letter-spacing: 0.1em;
+        width: 100%;
+        display: block;
+        padding: 10px;
+        background: black;
+        border: black 1px solid;
+        height: 100%;
+        border-radius: 5px;
+    }
+
+    .image-card-btn a:hover {
+        color: black;
+        background: white;
+    }
+
+    .view-all-link {
+        padding: 10px;
+        margin: 10px;
+        display: block;
+        text-decoration: underline;
+        text-align: center;
+    }
+
+    footer {
+        margin-left: 0 !important;
+    }
+
+    @media screen and (max-width: 800px) {
+        .photo-column {
+            -ms-flex: 50%;
+            flex: 50%;
+            max-width: 50%;
+        }
+    }
+
+    @media screen and (max-width: 600px) {
+        .photo-column {
+            -ms-flex: 100%;
+            flex: 100%;
+            max-width: 100%;
+        }
+    }
+
+    @media screen and (max-width: 500px) {
+        .image-card-image {
+            width: 70vw;
+        }
+    }
+</style>
+{% endblock %}
+{% block body %}
+<style>
+    nav {
+        background: none;
+        box-shadow: none;
+    }
+
+    .nav-link,
+    .brand {
+        color: white;
+    }
+
+    .ham-menu {
+        color: white;
+    }
+</style>
+<div class="landing" id="landing">
+    <div class="overlay"></div>
+    <video class="video" src="/static/videos/landingvideo.mp4" autoplay loop muted></video>
+    <form method="GET" action="/explore" class="search-bar">
+        <input type="search" class="search-input" name="search" placeholder="Search for photos by category" />
+        <button type="submit" class="search-btn">
+            <i class="fas fa-search search-icon"></i>
+        </button>
+    </form>
+</div>
+<section class="recent-photos" id="photos">
+
+    <div class="image-card" id="img-card">
+        <div class="image-card-header">
+            <div class="header-left">
+                <span class="image-card-title"></span>
+                <span class="user-name"></span>
+            </div>
+            <div class="header-right" onclick="closeImgCard();">
+                <span class="image-card-close" id="image-card-close">&times;</span>
+            </div>
+        </div>
+        <div class="image-card-body">
+            <div class="image-div">
+                <img src="/static/images/signin-register-bg.jpg" alt="" class="image-card-image" loading="lazy" />
+            </div>
+        </div>
+        <div class="image-card-footer">
+            <button class="image-card-btn">
+                <a href="" class="collection">Add to collection</a></button><button class="image-card-btn">
+                <a href="#" class="download-image" download>Download</a>
+            </button>
+        </div>
+    </div>
+
+    <h1 class="rp-head">Recent Photos</h1>
+    <div class="photos">
+        <div class="photo-column">
+            {% for i in range (iters) %}
+            {% if data[i] %}
+            <div class="photo">
+                <a href="#{{data[i].EntryId | safe}}"><img
+                        onclick="showImage(`{{data[i].EntryUrl | safe}}`,`{{data[i].EntryTitle | safe}}`,`{{data[i].UserId | safe}}`,`{{data[i].EntryId | safe}}`);"
+                        src="{{data[i].EntryUrl | safe}}" alt="{{data[i].EntryTitle | safe}}" class="image"
+                        id="{{data[i].EntryId | safe}}" /></a>
+                <div class="photo-details">
+                    <span class="image-title">{{data[i].EntryTitle | safe}}</span>
+                    <div class="image-action">
+                        <a onclick="loading();" href="{{url_for('user.AddToCollections',eid=data[i].EntryId | safe)}}"
+                            class="add-to-collection" title="Add to your collection"><i
+                                class="fas fa-plus-circle"></i></a>
+                        <a href="{{data[i].EntryUrl | safe}}" class="image-download" title="Download" download>
+                            <i class="fas fa-download"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+            {% endfor %}
+        </div>
+        <div class="photo-column">
+            {%for i in range(iters,iters*2) %}
+            {% if data[i] %}
+            <div class="photo">
+                <a href="#{{data[i].EntryId | safe}}"><img
+                        onclick="showImage(`{{data[i].EntryUrl | safe}}`,`{{data[i].EntryTitle | safe}}`,`{{data[i].UserId | safe}}`,`{{data[i].EntryId | safe}}`);"
+                        src="{{data[i].EntryUrl | safe}}" alt="{{data[i].EntryTitle | safe}}" class="image"
+                        id="{{data[i].EntryId | safe}}" /></a>
+                <div class="photo-details">
+                    <span class="image-title">{{data[i].EntryTitle | safe}}</span>
+                    <div class="image-action">
+                        <a onclick="loading();" href="{{url_for('user.AddToCollections',eid=data[i].EntryId | safe)}}"
+                            class="add-to-collection" title="Add to your collection"><i
+                                class="fas fa-plus-circle"></i></a>
+                        <a href="{{data[i].EntryUrl | safe}}" class="image-download" title="Download" download>
+                            <i class="fas fa-download"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+            {% endfor %}
+        </div>
+        <div class="photo-column">
+            {% for i in range(iters*2,iters*3)%}
+            {% if data[i] %}
+            <div class="photo">
+                <a href="#{{data[i].EntryId | safe}}"><img
+                        onclick="showImage(`{{data[i].EntryUrl | safe}}`,`{{data[i].EntryTitle | safe}}`,`{{data[i].UserId | safe}}`,`{{data[i].EntryId | safe}}`);"
+                        src="{{data[i].EntryUrl | safe}}" alt="{{data[i].EntryTitle | safe}}" class="image"
+                        id="{{data[i].EntryId | safe}}" /></a>
+                <div class="photo-details">
+                    <span class="image-title">{{data[i].EntryTitle | safe}}</span>
+                    <div class="image-action">
+                        <a onclick="loading();" href="{{url_for('user.AddToCollections',eid=data[i].EntryId | safe)}}"
+                            class="add-to-collection" title="Add to your collection"><i
+                                class="fas fa-plus-circle"></i></a>
+                        <a href="{{data[i].EntryUrl | safe}}" class="image-download" title="Download" download>
+                            <i class="fas fa-download"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {%endif%}
+            {%endfor%}
+        </div>
+
+        <div class="photo-column">
+            {%for i in range(iters*3,iters*4)%}
+            {%if data[i]%}
+            <div class="photo">
+                <a href="#{{data[i].EntryId | safe}}"><img
+                        onclick="showImage(`{{data[i].EntryUrl | safe}}`,`{{data[i].EntryTitle | safe}}`,`{{data[i].UserId | safe}}`,`{{data[i].EntryId | safe}}`);"
+                        src="{{data[i].EntryUrl | safe}}" alt="{{data[i].EntryTitle | safe}}" class="image"
+                        id="{{data[i].EntryId | safe}}" /></a>
+                <div class="photo-details">
+                    <span class="image-title">{{data[i].EntryTitle | safe}}</span>
+                    <div class="image-action">
+                        <a onclick="loading();" href="{{url_for('user.AddToCollections',eid=data[i].EntryId | safe)}}"
+                            class="add-to-collection" title="Add to your collection"><i
+                                class="fas fa-plus-circle"></i></a>
+                        <a href="{{data[i].EntryUrl | safe}}" class="image-download" title="Download" download>
+                            <i class="fas fa-download"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {%endif%}
+            {%endfor%}
+        </div>
+    </div>
+    <a href="{{url_for('user.Explore')}}" class="view-all-link">View all <i class="fas fa-chevron-right"></i></a>
+</section>
+
+<script>
+    document.querySelector(".logo-img").setAttribute("src", "/static/images/logo.svg")
+    const photoOverlay = document.getElementById("img-card");
+
+    window.addEventListener("scroll", changeNavbar, false);
+
+    function changeNavbar() {
+        const navBar = document.getElementById("navbar");
+        if (window.pageYOffset > 50) {
+            navBar.style.background = "rgba(255,255,255,1)";
+            document.querySelector(".brand").style.color = "black";
+            document.querySelector(".ham-menu").style.color = "black";
+            document.querySelector(".logo-img").setAttribute("src", "/static/images/darkLogo.svg")
+            document.querySelectorAll(".nav-link").forEach((link) => {
+                link.style.color = "black";
+                link.classList.add("scrolled-nav-link");
+            });
+        } else {
+            navBar.style.background = "none";
+            document.querySelector(".brand").style.color = "white";
+            document.querySelector(".ham-menu").style.color = "white";
+            document.querySelector(".logo-img").setAttribute("src", "/static/images/logo.svg")
+            document.querySelectorAll(".nav-link").forEach((link) => {
+                link.style.color = "white";
+                link.classList.remove("scrolled-nav-link");
+            });
+        }
+    }
+
+    function showImage(url, title, user, id) {
+        const photoOverlayImage = document.querySelector(".image-card-image")
+        const photoOverlayUser = document.querySelector(".user-name")
+        const photoOverlayTitle = document.querySelector(".image-card-title")
+        const addToCollectionBtn = document.querySelector(".collection")
+        const imgDownloadBtn = document.querySelector(".download-image")
+        photoOverlay.style.display = "flex"
+        photoOverlayImage.setAttribute("src", url)
+        photoOverlayImage.setAttribute("alt", title)
+        addToCollectionBtn.setAttribute("href", `/addtocollection/${id}`)
+        imgDownloadBtn.setAttribute("href", url)
+        photoOverlayTitle.textContent = title
+        photoOverlayUser.textContent = user
+    }
+
+    function closeImgCard() {
+        photoOverlay.style.display = "none";
+    }
+
+</script>
+</body>
+{% endblock %}

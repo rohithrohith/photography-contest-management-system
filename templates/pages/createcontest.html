@@ -1,0 +1,554 @@
+{% extends 'template/template.html' %}
+{% block title %}
+Capture | Contests
+{% endblock %}
+
+{% block style %}
+<style>
+    .container {
+        padding: 70px 100px 0 100px;
+    }
+
+    .form-control {
+        display: flex;
+        flex-direction: column;
+        position: relative;
+        margin: 15px 0;
+        max-width: 400px;
+    }
+
+    .form-label {
+        position: absolute;
+        top: 20px;
+        font-size: 14px;
+        pointer-events: none;
+        height: 100%;
+        width: 100%;
+        letter-spacing: 1px;
+        cursor: text;
+        transition: 0.2s ease;
+    }
+
+    .textarea-label {
+        font-size: 15px;
+    }
+
+    .form-input {
+        padding: 15px 10px 5px 0;
+        outline: none;
+        height: 50px;
+        font-size: 16px;
+        border: none;
+        border-bottom: 2px solid var(--themeOrange);
+        width: 100%;
+        border-radius: 0;
+    }
+
+    .textarea-input {
+        resize: vertical;
+        border: 2px solid var(--themeOrange);
+        height: 80px;
+        outline: none;
+        padding: 5px;
+        margin-top: 5px;
+        font-size: 16px;
+    }
+
+    .form-input:focus {
+        background: white;
+    }
+
+    .form-input:focus+.form-label,
+    .form-input:not(:placeholder-shown)+.form-label {
+        top: 0 !important;
+        font-size: 12px !important;
+    }
+
+    .textarea-input:focus+.form-label .textarea-label,
+    .textarea-input:not(:placeholder-shown)+.form-label .textarea-label {
+        background: white;
+        padding: 3px 0px;
+    }
+
+    .form-input:not(:placeholder-shown):invalid {
+        border-bottom: red 2px solid;
+    }
+
+    .password-input:not(:placeholder-shown):invalid {
+        border-bottom: var(--themeOrange) 2px solid;
+    }
+
+    .form-input:empty+.form-label {
+        top: 20px;
+        color: black;
+    }
+
+    .radios {
+        margin-top: 5px;
+        display: flex;
+        gap: 20px;
+    }
+
+    .radio-main-label {
+        font-size: 15px;
+    }
+
+    .info-icon {
+        cursor: pointer;
+        position: relative;
+    }
+
+    .info-icon:after {
+        content: "Public contest entries can be seen, downloadable and usable by everyone but, Private contest entries can only be seen to contest host.";
+        padding: 15px;
+        position: absolute;
+        font-family: 'Poppins', sans-serif;
+        font-size: 14px;
+        font-weight: 500;
+        background: white;
+        max-width: 300px;
+        transform: translate(50%, 0);
+        width: 200px;
+        right: 0;
+        display: block;
+        opacity: 0;
+        text-align: justify;
+        pointer-events: none;
+        top: 180%;
+        box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+        z-index: 1;
+        transition: 0.1s ease;
+    }
+
+    .info-icon:hover::after {
+        opacity: 1;
+    }
+
+    .radio-control {
+        display: flex;
+        align-items: center;
+        padding: 10px;
+        border-radius: 30px;
+        cursor: pointer;
+        position: relative;
+    }
+
+    .radio-input {
+        margin-right: 10px;
+        outline: none;
+    }
+
+    .radio-input:checked~.checkmark {
+        background: var(--themeOrange);
+    }
+
+    .radio-label {
+        cursor: pointer;
+    }
+
+    .checkmark {
+        position: absolute;
+        top: 12px;
+        left: 5px;
+        height: 20px;
+        width: 20px;
+        background-color: #ccc;
+        border-radius: 100%;
+        pointer-events: none;
+    }
+
+    .checked {
+        background: hsla(0, 0%, 80%, .30);
+    }
+
+    .radio-control:hover,
+    .radio-control:focus-within {
+        background: hsla(0, 0%, 80%, .50);
+    }
+
+    #tags-hidden-input,
+    #formats-hidden-input {
+        pointer-events: none;
+        padding: 0;
+        height: 10px;
+        opacity: 0;
+        margin: 0;
+        border: none;
+        outline: none;
+    }
+
+    .tags-control,
+    .formats-control {
+        margin-bottom: 10px;
+        position: relative;
+    }
+
+    .related-tag-label,
+    .related-format-label {
+        margin-bottom: 5px;
+        font-size: 15px;
+        display: block;
+    }
+
+    .selected-tags,
+    .selected-formats {
+        min-height: 50px;
+        max-width: 400px;
+        margin-top: 5px;
+        font-size: 12px;
+        display: flex;
+        flex-wrap: wrap;
+        color: grey;
+        padding: 10px;
+        align-items: center;
+        border: 1px solid #797878;
+    }
+
+    .tag,
+    .format {
+        display: flex;
+        align-items: center;
+        width: fit-content;
+        padding: 2px 5px;
+        background: #eee;
+        border: 1px solid #797878;
+        font-size: 14px;
+        margin: 0 10px 5px 0;
+    }
+
+    .tag-text,
+    .format-text {
+        margin-right: 5px;
+        color: black;
+    }
+
+    .tag-delete,
+    .format-delete {
+        color: red;
+        font-weight: bold;
+        cursor: pointer;
+    }
+
+    .tag-input-control,
+    .format-input-control {
+        min-width: 360px;
+        width: 400px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-top: -23px;
+    }
+
+    .tag-input,
+    .format-input {
+        flex: 1;
+        height: 40px;
+        padding-left: 5px;
+        border-radius: 0;
+        border: 2px solid var(--themeOrange);
+        border-right: none;
+        outline: none;
+    }
+
+    .add-tag-btn,
+    .add-format-btn {
+        padding: 0 10px;
+        background: #3d3d3d;
+        color: white;
+        cursor: pointer;
+        border: none;
+        display: block;
+        height: 40px;
+    }
+
+    .date-label {
+        display: block;
+        margin-bottom: 5px;
+        font-size: 15px;
+    }
+
+    .date-input {
+        padding: 5px;
+        font-size: 13px;
+        outline: none;
+        border: 1px solid #3d3d3d;
+        cursor: pointer;
+    }
+
+    .create-btn {
+        margin: 20px 0;
+        border: 1px solid #3d3d3d;
+        color: white;
+        background: #3d3d3d;
+        padding: 10px;
+        letter-spacing: 1px;
+        border-radius: 5px;
+        font-weight: 400;
+        cursor: pointer;
+    }
+
+    .create-btn:hover {
+        background: white;
+        color: #3d3d3d;
+    }
+
+    .host-link {
+        display: none !important;
+    }
+
+    footer {
+        display: none !important;
+    }
+
+    @media screen and (max-width:900px) {
+        .container {
+            padding: 70px 10px 10px 10px;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block body %}
+<h1 style="margin-top: 10px;">Create New Contest</h1>
+<form action="" method="post" class="contest-creation-form" id="create-form">
+    <div class="form-control">
+        <input type="text" placeholder=" " required name="title" id="title" class="form-input">
+        <label for="title" class="form-label">Enter Title</label>
+    </div>
+    <div class="form-control textarea-form-control">
+        <label for="details" class="textarea-label"><span class="textarea-span">Describe contest rules (min 250
+                characters)</span></label>
+        <textarea name="details" id="details" cols="30" placeholder=" " minlength="250" rows="10" class="textarea-input"
+            required></textarea>
+    </div>
+    <div class="form-control">
+        <div class="radio-main-label">Select contest type <i class="fas fa-info-circle fa-sm info-icon"></i></div>
+        <div class="radios">
+            <div class="radio-control checked">
+                <input type="radio" name="contest-type" value="public" id="public" class="radio-input" checked
+                    onchange="changeType(this)" required>
+                <span class="checkmark"></span>
+                <label for="public" class="radio-label">Public</label>
+            </div>
+            <div class="radio-control">
+                <input type="radio" id="private" value="private" name="contest-type" onchange="changeType(this)"
+                    class="radio-input">
+                <span class="checkmark"></span>
+                <label for="private" class="radio-label">Private</label>
+            </div>
+        </div>
+    </div>
+    <div class="tags-control">
+        <label for="tag-input" class="related-tag-label">Enter related tags <small style="color: grey;">(separate tags
+                by
+                comma or enter one by one)</small></label>
+        <input type="text" class="hidden-input" value="" name="tags" id="tags-hidden-input" onfocus="focusTagInput();"
+            required>
+        <div class="tag-input-control">
+            <input type="text" placeholder="Ex: tree" id="tag-input" class="tag-input">
+            <button class="add-tag-btn" id="add-tag-btn" type="button"><i class="fas fa-plus"></i></button>
+        </div>
+        <div class="selected-tags">No tags given!</div>
+    </div>
+    <div class="formats-control">
+        <label for="format-input" class="related-format-label">Enter accepted file formats <small
+                style="color: grey;">(separate formats by
+                comma or enter one by one)</small></label>
+        <input type="text" class="hidden-input" name="formats" id="formats-hidden-input" onfocus="focusFormatInput()"
+            required>
+        <div class="format-input-control">
+            <input type="text" placeholder="Ex jpeg png mp4" id="format-input" class="format-input">
+            <button class="add-format-btn" id="add-format-btn" type="button"><i class="fas fa-plus"></i></button>
+        </div>
+        <div class="selected-formats">No formats specified!</div>
+    </div>
+    <div class="date-control">
+        <label for="close-date" class="date-label">Close date</label>
+        <input type="date" name="close-date" id="close-date" class="date-input" required>
+    </div>
+    <input type="submit" value="Create contest" class="create-btn" id="create-btn">
+</form>
+{% endblock %}
+
+{% block script %}
+<script>
+    const selectedTags = document.querySelector('.selected-tags')
+    const tagInput = document.getElementById('tag-input')
+    const tagAddBtn = document.getElementById('add-tag-btn')
+
+    const selectedFormats = document.querySelector('.selected-formats')
+    const formatInput = document.getElementById('format-input')
+    const formatAddBtn = document.getElementById('add-format-btn')
+
+    const createBtn = document.getElementById('create-btn')
+    const createForm = document.getElementById('create-form')
+
+    let tagDeleteBtns;
+    let tags = []
+    let formats = []
+    let extentions = ['mp4', 'mov', 'webp', 'webm', 'mkv', 'avi', 'wmv', 'tif', 'tiff', 'bmp', 'jpeg', 'jpg', 'gif', 'png', 'raw', 'cr2', 'nef', 'orf', 'sr2', 'rw2', 'arw', 'srf', 'nrw', 'raf', 'cr3', 'dng']
+
+    /* 
+        Events
+    */
+    tagInput.addEventListener('keyup', (e) => {
+        if (e.keyCode === 13) {
+            e.preventDefault()
+            insertTags()
+        }
+    }, false)
+    formatInput.addEventListener('keyup', (e) => {
+        if (e.keyCode === 13) {
+            e.preventDefault()
+            insertFormats()
+        }
+    }, false)
+    tagAddBtn.addEventListener('click', insertTags, false)
+    formatAddBtn.addEventListener('click', insertFormats, false)
+    createForm.addEventListener('submit', (e) => {
+        e.preventDefault()
+        if (tagInput.value != '') {
+            insertTags()
+        }
+        if (formatInput.value != '') {
+            insertFormats()
+        }
+        createForm.submit()
+    }, false)
+
+    /* 
+        Functions
+    */
+    function changeType(type) {
+        const radios = document.querySelectorAll('.radio-input')
+        radios.forEach(radio => {
+            radio.checked = false
+        });
+        type.checked = true
+        const parents = document.querySelectorAll('.radio-control')
+        parents.forEach(parent => {
+            parent.classList.remove('checked')
+        });
+        const parent = type.parentElement
+        parent.classList.add('checked')
+    }
+
+    function createFormat(format) {
+        if (selectedFormats.textContent == "No formats specified!")
+            selectedFormats.textContent = ""
+        const formatEle = document.createElement('div')
+        const formatText = document.createElement('span')
+        const fromatDelete = document.createElement('span')
+        formatEle.classList.add('format')
+        formatText.textContent = format
+        formatText.classList.add('format-text')
+        fromatDelete.textContent = "×"
+        fromatDelete.classList.add('format-delete')
+        fromatDelete.setAttribute('onclick', "deleteFormat(this);")
+        formatEle.appendChild(formatText)
+        formatEle.appendChild(fromatDelete)
+        selectedFormats.appendChild(formatEle)
+        fromatDeleteBtns = document.querySelectorAll('.format-delete');
+    }
+
+    function insertFormats() {
+        rejectedFormats = []
+        if (formatInput.value) {
+            const val = formatInput.value
+            let splitedFormats = val.split(" ")
+            splitedFormats.forEach(format => {
+                if (extentions.indexOf(format) == -1) {
+                    rejectedFormats.push(format)
+                }
+                if (formats.indexOf(format) == -1 && extentions.indexOf(format) != -1) {
+                    formats.push(format)
+                    document.getElementById('formats-hidden-input').value = formats
+                    createFormat(format)
+                }
+            });
+            formatInput.value = ''
+
+            if (rejectedFormats.length != 0) {
+                let text = 'Formats '
+                rejectedFormats.forEach(format => {
+                    if (rejectedFormats.indexOf(format) != rejectedFormats.length - 1)
+                        text += `<i>${format}</i>, `
+                    else
+                        text += `<i>${format}</i> `
+                })
+                text += "are not supported"
+                const ele = document.createElement('ul')
+                ele.classList.add('flashes')
+                const child = document.createElement('li')
+                child.classList.add('msg')
+                child.classList.add('error')
+                child.innerHTML = text
+                ele.appendChild(child)
+                document.body.appendChild(ele)
+                setTimeout(() => {
+                    ele.remove()
+                }, 3000)
+            }
+        }
+    }
+
+    function deleteFormat(ele) {
+        const format = ele.previousSibling.textContent
+        formats.splice(formats.indexOf(format), 1)
+        document.getElementById('formats-hidden-input').value = formats
+        ele.parentNode.remove()
+        if (document.getElementById('formats-hidden-input').value == '')
+            selectedFormats.textContent = "No formats specified!"
+    }
+
+    function createTag(tag) {
+        if (selectedTags.textContent == "No tags given!")
+            selectedTags.textContent = ""
+        const tagEle = document.createElement('div')
+        const tagText = document.createElement('span')
+        const tagDelete = document.createElement('span')
+        tagEle.classList.add('tag')
+        tagText.textContent = tag
+        tagText.classList.add('tag-text')
+        tagDelete.textContent = "×"
+        tagDelete.classList.add('tag-delete')
+        tagDelete.setAttribute('onclick', "deleteTag(this);")
+        tagEle.appendChild(tagText)
+        tagEle.appendChild(tagDelete)
+        selectedTags.appendChild(tagEle)
+        tagDeleteBtns = document.querySelectorAll('.tag-delete');
+    }
+
+    function insertTags() {
+        if (tagInput.value) {
+            const val = tagInput.value
+            let splitedTags = val.split(" ")
+            splitedTags.forEach(tag => {
+                if (tags.indexOf(tag) == -1) {
+                    tags.push(tag)
+                    document.getElementById('tags-hidden-input').value = tags
+                    createTag(tag)
+                }
+            });
+            tagInput.value = ''
+        }
+    }
+
+    function deleteTag(ele) {
+        const tag = ele.previousSibling.textContent
+        tags.splice(tags.indexOf(tag), 1)
+        document.getElementById('tags-hidden-input').value = tags
+        ele.parentNode.remove()
+        if (document.getElementById('tags-hidden-input').value == '')
+            selectedTags.textContent = "No tags given!"
+    }
+
+    function focusTagInput() {
+        tagInput.focus()
+    }
+    function focusFormatInput() {
+        formatInput.focus()
+    }
+
+</script>
+{% endblock %}

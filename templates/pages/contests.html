@@ -1,0 +1,341 @@
+{% extends 'template/template.html' %}
+{% block title %}
+Capture | Contests
+{% endblock %}
+
+{% block style %}
+<style>
+    .container {
+        padding: 70px 100px 0 100px;
+    }
+
+    .contest-header {
+        margin-top: 10px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .filter {
+        display: flex;
+        align-items: center;
+    }
+
+    .filter-label {
+        cursor: pointer;
+        font-weight: bold;
+        font-size: 12px;
+    }
+
+    .remove-filter {
+        color: red;
+        margin-right: 5px;
+        display: none;
+    }
+
+    .filter-switch-box {
+        margin: 0 10px;
+        width: 45px;
+        display: flex;
+        align-items: center;
+        height: 22px;
+        border-radius: 22px;
+        padding: 2px;
+        transform: 1s ease;
+        background: #ddd;
+        position: relative;
+    }
+
+    .filter-switch {
+        height: 18px;
+        width: 18px;
+        border-radius: 50%;
+        box-shadow: 0 1px 4px 0 rgba(0, 0, 0, 0.2), 0 4px 8px 0 rgba(0, 0, 0, 0.19);
+        background: var(--themeOrange);
+        display: block;
+        position: absolute;
+        left: 50%;
+        transition: transform 0.2s ease-in;
+    }
+
+    .no-filter {
+        transform: translateX(-50%);
+    }
+
+    .public-filter {
+        transform: translateX(-100%);
+    }
+
+    .private-filter {
+        transform: translateX(0);
+    }
+
+    .contest-search-form {
+        display: flex;
+        width: 100%;
+        height: 40px;
+        margin: 10px 0;
+        border: 1px solid black;
+    }
+
+    .contest-search-input {
+        flex: 1;
+        border: none;
+        outline: none;
+        padding: 0 5px;
+    }
+
+    .search-btn {
+        padding: 0 10px;
+        height: 100%;
+        background: #eee !important;
+        display: block;
+        align-items: center;
+    }
+
+    .contests {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        margin-top: 10px;
+    }
+
+    .contest {
+        padding: 10px;
+        height: 220px;
+        display: grid;
+        grid-template-rows: 135px 30px auto;
+        margin: 5px;
+        border-radius: 5px;
+        box-shadow: 0 1px 8px 0 rgba(0, 0, 0, 0.2), 0 1px 4px 0 rgba(0, 0, 0, 0.19);
+    }
+
+    .contest-image {
+        background: rgb(240, 240, 240);
+        height: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .contest-first-letter {
+        font-size: 80px;
+        text-transform: uppercase;
+        color: rgb(138, 138, 138);
+    }
+
+    .contest-head {
+        background: rgb(240, 240, 240);
+        border-radius: 5px;
+        padding: 10px;
+    }
+
+    .contest-body,
+    .contest-footer {
+        display: flex;
+        align-items: center;
+    }
+
+    .contest-footer {
+        justify-content: space-between;
+    }
+
+    .contest-body {
+        margin-top: 5px;
+        flex-direction: column;
+        justify-content: center;
+        align-items: flex-start;
+    }
+
+    .contest-name {
+        overflow: hidden;
+        font-size: 15px;
+        width: 150px;
+        white-space: nowrap;
+        text-transform: capitalize;
+        text-overflow: ellipsis;
+    }
+
+    .open-contest-btn {
+        padding: 5px 10px;
+        color: white;
+        font-size: 14px;
+        background-color: #3d3d3d;
+        border-radius: 5px;
+        text-decoration: none;
+        letter-spacing: 1px;
+        border: none;
+    }
+
+    .tags {
+        display: block;
+        display: flex;
+        align-items: center;
+        font-size: 12px;
+    }
+
+    .no-data {
+        margin-top: 20px;
+        height: 100px;
+        display: flex;
+        align-items: center;
+        color: #3d3d3d;
+        padding: 10px;
+        border: 2px #3d3d3d solid;
+    }
+
+    .contests-link {
+        display: none !important;
+    }
+
+    @media screen and (max-width:900px) {
+        .contests {
+            grid-template-columns: repeat(3, 1fr);
+        }
+
+        .container {
+            padding: 70px 10px 10px 10px;
+        }
+    }
+
+    @media screen and (max-width:650px) {
+        .contests {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+</style>
+{% endblock %}
+
+{% block body %}
+<div class="contest-header">
+    <h1>Browse Contests</h1>
+    <div class="filter">
+        <a href="{{url_for('user.Contests')}}" class="remove-filter" title="Remove filter"><i
+                class="fas fa-times-circle"></i></a>
+        <span class="filter-label filter-public" onclick="filterContests('public')">Public</span>
+        <div class="filter-switch-box">
+            <span class="filter-switch no-filter"></span>
+        </div>
+        <span class="filter-label filter-private" onclick="filterContests('private')">Private</span>
+    </div>
+</div>
+<form action="" method="get" class="contest-search-form">
+    <input type="text" name="key" id="contest-search" class="contest-search-input"
+        placeholder="Search contests by tags..." value="{{key | safe}}">
+    <button type="submit" class="search-btn"><i class="fas fa-search"></i></button>
+</form>
+<div class="content">
+    {% if not nodata %}
+    <div style="color: grey; font-size: 14px;" id="no-of-items">{{items | safe}} results found</div>
+    <div class="contests" id="contests">
+        {% for item in data %}
+        <div class="contest">
+            <div class="contest-head">
+                <div class="contest-image">
+                    <span class="contest-first-letter">{{item.Title[0] | safe}}</span>
+                </div>
+            </div>
+            <div class="contest-body">
+                <h3 class="contest-name" title="{{item.Title | safe}}">{{item.Title | safe}}</h3>
+            </div>
+            <div class="contest-footer">
+                <a href="/contest/{{item.ContestId | safe}}" class="open-contest-btn">view</a>
+                <small style="color: rgb(95, 95, 95); font-weight: bold;">{{item.Entries | safe}} entries</small>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="no-data">
+        <h2>No contests are open at this time! try again later</h2>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block script %}
+<script>
+    const publicFilter = document.querySelector('.filter-public')
+    const privateFilter = document.querySelector('.filter-private')
+    const switchBtn = document.querySelector('.filter-switch')
+    const contests = document.querySelector('#contests')
+
+    function filterContests(filter) {
+        if (filter == "public") {
+            switchBtn.classList.remove('private-filter')
+            switchBtn.classList.remove('no-filter')
+            switchBtn.classList.add('public-filter')
+            document.querySelector('.filter-private').style.pointerEvents = "all"
+            document.querySelector('.filter-public').style.pointerEvents = "none"
+        } else {
+            switchBtn.classList.remove('public-filter')
+            switchBtn.classList.remove('no-filter')
+            switchBtn.classList.add('private-filter')
+            document.querySelector('.filter-private').style.pointerEvents = "none"
+            document.querySelector('.filter-public').style.pointerEvents = "all"
+        }
+        document.querySelector('.remove-filter').style.display = "block"
+        document.querySelector('.filter-switch-box').style.background = "#3d3d3d"
+        contests.textContent = ''
+        let xhr = new XMLHttpRequest()
+        xhr.onreadystatechange = function () {
+            if (this.readyState == 4 && this.status == 200) {
+                let data = xhr.responseText
+                if (data != "no data") {
+                    data = JSON.parse(data)
+                    let nbrOfItemsEle = document.getElementById('no-of-items')
+                    if (nbrOfItemsEle) {
+                        nbrOfItemsEle.textContent = `${data.length} results found`
+                    } else {
+                        nbrOfItemsEle = document.createElement('span')
+                        nbrOfItemsEle.style.color = "grey"
+                        nbrOfItemsEle.style.fontSize = "14px"
+                        nbrOfItemsEle.textContent = `${data.length} results found`
+                        contests.appendChild(nbrOfItemsEle)
+                    }
+                    document.querySelector('.content').innerHTML = `<div class="content">
+                        <div style="color: grey; font-size: 14px;" id="no-of-items">${data.length} results found</div>
+                        <div class="contests" id="contests"></div>
+                        </div>`
+                    data.forEach(item => {
+                        createContestBox(item)
+                    });
+                } else {
+                    console.log("no data")
+                    const html = `<div class="no-data">
+                                    <h2>No contests are open at this time! try again later</h2>
+                                </div>`
+                    document.querySelector('.content').innerHTML = html
+                }
+            }
+        }
+        if (document.getElementById('contest-search').value) {
+            xhr.open("GET", `/contestsfilter?filter=${filter}&key=${document.getElementById('contest-search').value}`, true)
+        }
+        else
+            xhr.open("GET", `/contestsfilter?filter=${filter}`, true)
+        xhr.send()
+    }
+
+    function createContestBox(data) {
+        const contest = document.createElement('div')
+        console.log(data)
+        contest.classList.add('contest')
+        const html = `
+            <div class="contest-head">
+                <div class="contest-image">
+                    <span class="contest-first-letter">${data.Title[0]}</span>
+                </div>
+            </div>
+            <div class="contest-body">
+                <h3 class="contest-name" title="${data.Title}">${data.Title}</h3>
+            </div>
+            <div class="contest-footer">
+                <a href="/contest/${data.ContestId}" class="open-contest-btn">view</a>
+                <small style="color: rgb(95, 95, 95); font-weight: bold;">${data.Entries} entries</small>
+            </div>
+        `
+        contest.innerHTML = html
+        document.getElementById('contests').appendChild(contest)
+    }
+</script>
+{% endblock %}

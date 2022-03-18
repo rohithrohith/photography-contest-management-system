@@ -1,0 +1,75 @@
+CREATE DATABASE dbmsproject;
+USE dbmsproject;
+
+CREATE TABLE users ( 
+    UserName VARCHAR(100) PRIMARY KEY ,
+    MailId VARCHAR(100) NOT NULL UNIQUE, 
+    Password TEXT NOT NULL,
+    IsVerified BOOLEAN DEFAULT 0
+);
+
+CREATE TABLE contests (
+    ContestId VARCHAR(200) AUTO_INCREMENT PRIMARY KEY,
+    Title VARCHAR(250) NOT NULL,
+    ContestType VARCHAR(20) NOT NULL,
+    CloseDate DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    Details TEXT NOT NULL,
+    HostId VARCHAR(100),
+    Entries int(11) NOT NULL DEFAULT 0,
+    HostedOn DATE,
+    HasPickedWinner BOOLEAN DEFAULT 0,
+    IsOpen BOOLEAN DEFAULT 0,
+    FOREIGN KEY(hostId) REFERENCES users(userName)
+);
+
+CREATE TABLE entries (
+    EntryId VARCHAR(500) PRIMARY KEY,
+    EntryUrl TEXT NOT NULL,
+    EntryTitle VARCHAR(200) NOT NULL,
+    CId VARCHAR(200) NOT NULL,
+    Type VARCHAR(100) DEFAULT 'public',
+    UserId VARCHAR(100),
+    FOREIGN KEY(CId) REFERENCES contests(ContestId),
+    FOREIGN KEY(UserId) REFERENCES users(UserName)
+);
+
+CREATE TABLE user_collections (
+    EntryId VARCHAR(500),
+    UserId VARCHAR(100),
+    FOREIGN KEY(UserId) REFERENCES users(userName),
+    FOREIGN KEY(EntryId) REFERENCES entries(EntryId) ON DELETE SET NULL ON UPDATE CASCADE
+);
+
+CREATE TABLE participates (
+    UserId VARCHAR(100) NOT NULL,
+    FOREIGN KEY(UserId) REFERENCES users(UserName),
+    CId VARCHAR(200) NOT NULL,
+    FOREIGN KEY(CId) REFERENCES contests(ContestId) ON DELETE CASCADE
+);
+
+CREATE TABLE tags (
+    Tag VARCHAR(255) NOT NULL,
+    CId VARCHAR(200) NOT NULL,
+    FOREIGN KEY (CId) REFERENCES contests(ContestId) ON DELETE CASCADE
+);
+
+CREATE TABLE formats (
+    Format VARCHAR(255) NOT NULL,
+    CId VARCHAR(200) NOT NULL,
+    FOREIGN KEY (CId) REFERENCES contests(ContestId) ON DELETE CASCADE
+);
+
+CREATE TABLE contest_winners (
+    WinnerId VARCHAR(255) NOT NULL,
+    FOREIGN KEY(WinnerId) REFERENCES users(UserName),
+    CId VARCHAR(200) NOT NULL,
+    FOREIGN KEY (CId) REFERENCES contests(ContestId) ON DELETE CASCADE,
+    EntryId VARCHAR(500),
+    FOREIGN KEY(EntryId) REFERENCES entries(EntryId) ON DELETE SET NULL ON UPDATE CASCADE
+);
+
+CREATE TRIGGER set_datetime BEFORE INSERT ON contests 
+FOR EACH ROW
+BEGIN
+SET New.HostedOn=CURRENT_TIMESTAMP()
+END;

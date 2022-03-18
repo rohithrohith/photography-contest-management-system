@@ -1,0 +1,60 @@
+{% extends 'template/template.html' %}
+{% block title %}
+Capture | Contest name
+{% endblock %}
+
+{% block style %}
+<style>
+    .container {
+        padding: 70px 100px 0 100px;
+    }
+
+    .winner-header {
+        height: 40vh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        background: #3d3d3d;
+        border-radius: 10px;
+        margin-top: 10px;
+    }
+
+    .img-div {
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        padding: 10px;
+        margin: 10px 0;
+        box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2), 0 4px 8px 0 rgba(0, 0, 0, 0.19);
+    }
+
+    .winner-img {
+        object-fit: cover;
+        max-width: 100%;
+
+    }
+
+    @media screen and (max-width:900px) {
+        .container {
+            padding: 70px 10px 0 10px;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block body %}
+<div class="winner-header">
+    <i class="fas fa-trophy fa-3x" style="color: gold;"></i>
+    <h1 style=" margin: 20px 0; color: white;text-align: center;">{{data.UserId}}'s Entry <i>'{{data.EntryTitle |
+            safe}}'</i> Won the
+        contest!</h1>
+    <i class="fas fa-arrow-down" style="color: var(--themeOrange); font-size: 20px;"></i>
+</div>
+<div class="info-section">
+    <div class="info-item"></div>
+    <div class="img-div">
+        <img src="/{{data.EntryUrl | safe}}" alt="{{data.EntryTitle | safe}}" class="winner-img">
+    </div>
+</div>
+{% endblock %}

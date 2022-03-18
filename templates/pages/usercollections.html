@@ -1,0 +1,287 @@
+{% extends 'template/template.html' %}
+{% block title %}
+Capture | entries
+{% endblock %}
+
+{% block style %}
+<style>
+    .container {
+        padding: 80px 100px 0 100px;
+    }
+
+    .collections-link {
+        display: none !important;
+    }
+
+    .photos {
+        flex-wrap: wrap;
+        display: flex;
+        display: -ms-flexbox;
+        -ms-flex-wrap: wrap;
+        position: relative;
+    }
+
+    .photo-column {
+        -ms-flex: 25%;
+        flex: 25%;
+        max-width: 25%;
+        padding: 0 4px;
+    }
+
+    .photo {
+        margin-top: 8px;
+        vertical-align: middle;
+        width: 100%;
+        position: relative;
+    }
+
+    .photo .image {
+        width: 100%;
+        display: block;
+    }
+
+    .photo-details {
+        justify-content: center;
+        align-items: flex-end;
+        color: white;
+        padding: 10px;
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        display: none;
+    }
+
+    .photo:hover .photo-details {
+        background: rgba(0, 0, 0, 0.4);
+        display: flex;
+    }
+
+    .image-title,
+    .add-to-collection i,
+    .image-download i {
+        font-size: 13px;
+        cursor: pointer;
+        color: white;
+    }
+
+    .image-card {
+        position: fixed;
+        top: 0;
+        left: 0;
+        background: rgba(0, 0, 0, 0.8);
+        height: 100vh;
+        width: 100vw;
+        z-index: 10;
+        padding: 20px;
+        overflow: scroll;
+        display: none;
+        flex-direction: column;
+    }
+
+    .image-card-header {
+        display: flex;
+        justify-content: space-between;
+        width: 100%;
+        align-items: center;
+        padding: 20px;
+        background: white;
+        color: black;
+        text-transform: capitalize;
+        border-radius: 10px 10px 0 0;
+        border-bottom: 0.1em solid #1f1f1f;
+    }
+
+    .header-left {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .header-right {
+        cursor: pointer;
+    }
+
+    .image-card-title {
+        font-size: 18px;
+    }
+
+    .user-name {
+        font-size: 12px;
+    }
+
+    .image-card-close {
+        font-size: 30px;
+        font-weight: 600;
+    }
+
+    .image-div {
+        width: 100%;
+        background: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 20px 100px;
+    }
+
+    .image-card-image {
+        object-fit: cover;
+        max-width: 400px;
+        display: block;
+    }
+
+    .image-card-footer {
+        background: white;
+        border-radius: 0 0 10px 10px;
+        padding: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .card-download-btn {
+        background: black;
+        border-radius: 5px;
+        text-align: center;
+        font-size: 14px;
+        color: white;
+        padding: 10px;
+    }
+
+    @media screen and (max-width: 900px) {
+        .container {
+            padding: 70px 10px 10px 10px;
+        }
+    }
+
+    @media screen and (max-width: 500px) {
+        .image-card-image {
+            width: 70vw;
+        }
+    }
+
+    @media screen and (max-width: 800px) {
+        .photo-column {
+            -ms-flex: 50%;
+            flex: 50%;
+            max-width: 50%;
+        }
+    }
+
+    @media screen and (max-width: 600px) {
+        .photo-column {
+            -ms-flex: 100%;
+            flex: 100%;
+            max-width: 100%;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block body %}
+<h1>Your collections</h1>
+<div class="image-card" id="img-card">
+    <div class="image-card-header">
+        <div class="header-left">
+            <span class="image-card-title"></span>
+            <span class="user-name"></span>
+        </div>
+        <div class="header-right" onclick="closeImgCard();">
+            <span class="image-card-close" id="image-card-close">&times;</span>
+        </div>
+    </div>
+    <div class="image-card-body">
+        <div class="image-div">
+            <img src="" alt="" class="image-card-image" loading="lazy" />
+        </div>
+    </div>
+    <div class="image-card-footer">
+        <a href="" class="card-download-btn" download>Download</a>
+    </div>
+</div>
+{% if not nodata %}
+<span style="color: grey; font-size: 14px;">{{ len | safe }} item</span>
+<div class="photos">
+    <div class="photo-column">
+        {% for i in range(iters) %}
+        {% if data[i] %}
+        <div class="photo"
+            onclick="showImage('/{{data[i].EntryUrl | safe}}','{{data[i].EntryTitle | safe}}','{{data[i].UserId | safe}}','{{data[i].EntryId | safe}}');">
+            <a href="#{{data[i].EntryId | safe}}"><img src="/{{data[i].EntryUrl | safe}}"
+                    alt="{{data[i].EntryTitle | safe}}" class="image" id="{{data[i].EntryId | safe}}" /></a>
+            <div class="photo-details">
+                <span class="image-title">{{data[i].EntryTitle | safe}}</span>
+            </div>
+        </div>
+        {% endif %}
+        {% endfor %}
+    </div>
+    <div class="photo-column">
+        {% for i in range(iters,iters*2) %}
+        {% if data[i] %}
+        <div class="photo"
+            onclick="showImage('/{{data[i].EntryUrl | safe}}','{{data[i].EntryTitle | safe}}','{{data[i].UserId | safe}}','{{data[i].EntryId | safe}}');">
+            <a href="#{{data[i].EntryId | safe}}"><img src="/{{data[i].EntryUrl | safe}}"
+                    alt="{{data[i].EntryTitle | safe}}" class="image" id="{{data[i].EntryId | safe}}" /></a>
+            <div class="photo-details">
+                <span class="image-title">{{data[i].EntryTitle | safe}}</span>
+            </div>
+        </div>
+        {% endif %}
+        {% endfor %}
+    </div>
+    <div class="photo-column">
+        {% for i in range(iters*2,iters*3) %}
+        {% if data[i] %}
+        <div class="photo"
+            onclick="showImage('/{{data[i].EntryUrl | safe}}','{{data[i].EntryTitle | safe}}','{{data[i].UserId | safe}}','{{data[i].EntryId | safe}}');">
+            <a href="#{{data[i].EntryId | safe}}"><img src="/{{data[i].EntryUrl | safe}}"
+                    alt="{{data[i].EntryTitle | safe}}" class="image" id="{{data[i].EntryId | safe}}" /></a>
+            <div class="photo-details">
+                <span class="image-title">{{data[i].EntryTitle | safe}}</span>
+            </div>
+        </div>
+        {% endif %}
+        {% endfor %}
+    </div>
+    <div class="photo-column">
+        {% for i in range(iters*3,iters*4) %}
+        {% if data[i] %}
+        <div class="photo"
+            onclick="showImage('/{{data[i].EntryUrl | safe}}','{{data[i].EntryTitle | safe}}','{{data[i].UserId | safe}}','{{data[i].EntryId | safe}}');">
+            <a href="#{{data[i].EntryId | safe}}"><img src="/{{data[i].EntryUrl | safe}}"
+                    alt="{{data[i].EntryTitle | safe}}" class="image" id="{{data[i].EntryId | safe}}" /></a>
+            <div class="photo-details">
+                <span class="image-title">{{data[i].EntryTitle | safe}}</span>
+            </div>
+        </div>
+        {% endif %}
+        {% endfor %}
+    </div>
+</div>
+{% else %}
+<div style="color: grey;padding: 10px; border: 2px grey solid; margin-top: 20px;">
+    <h2>No items in your collections!</h2>
+</div>
+{% endif %}
+{% endblock %}
+
+{% block script %}
+<script>
+    const photoOverlay = document.getElementById("img-card");
+    function showImage(url, title, user, id) {
+        const photoOverlayImage = document.querySelector(".image-card-image")
+        const photoOverlayUser = document.querySelector(".user-name")
+        const photoOverlayTitle = document.querySelector(".image-card-title")
+        photoOverlay.style.display = "flex"
+        photoOverlayImage.setAttribute("src", url)
+        document.querySelector(".card-download-btn").setAttribute('href', url)
+        photoOverlayImage.setAttribute("alt", title)
+        photoOverlayTitle.textContent = title
+        photoOverlayUser.textContent = user
+    }
+
+    function closeImgCard() {
+        photoOverlay.style.display = "none";
+    }
+</script>
+{% endblock %}

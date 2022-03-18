@@ -1,0 +1,199 @@
+{% extends 'template/template.html' %}
+{% block title %}
+Capture | {{contest.Title | safe}}
+{% endblock %}
+
+{% block style %}
+<style>
+    .container {
+        padding: 70px 100px 0 100px;
+    }
+
+    .contest-head {
+        margin-top: 20px;
+        display: flex;
+        padding: 10px;
+        background-color: whitesmoke;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .contest-heading {
+        margin-left: 10px;
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .contest-name {
+        font-size: 25px;
+        text-transform: capitalize;
+    }
+
+    .contest-open {
+        margin-left: 10px;
+        color: darkgreen;
+        font-weight: bold;
+    }
+
+    .contest-closed {
+        margin-left: 10px;
+        color: red;
+        font-weight: bold;
+    }
+
+    .tags {
+        color: rgb(95, 95, 95);
+    }
+
+    .tag {
+        font-size: 13px;
+    }
+
+    .closes-on {
+        color: rgb(95, 95, 95);
+    }
+
+    .contest-btns {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .make-entry-btn {
+        padding: 10px 20px;
+        color: white;
+        font-size: 14px;
+        background-color: #3d3d3d;
+        border-radius: 5px;
+        text-decoration: none;
+        letter-spacing: 1px;
+        border: #3d3d3d 1px solid;
+        transition: 0.1s ease-in-out;
+        margin: 2px;
+    }
+
+    .make-entry-btn:hover {
+        background: none;
+        color: #3d3d3d;
+        border: #3d3d3d 1px solid;
+    }
+
+    .disabled-make-entry-btn {
+        padding: 10px 20px;
+        color: white;
+        font-size: 14px;
+        background-color: rgba(61, 61, 61, 0.7);
+        border-radius: 5px;
+        letter-spacing: 1px;
+        cursor: not-allowed;
+        border: none;
+        transition: 0.1s ease-in-out;
+    }
+
+    .contest-body {
+        padding: 10px;
+    }
+
+    .description {
+        margin: 10px 0 5px 0;
+    }
+
+    .below-btn {
+        margin: 30px 0 10px 0;
+    }
+
+    @media screen and (max-width:900px) {
+        .container {
+            padding: 70px 10px 0 10px;
+        }
+    }
+
+    @media screen and (max-width:600px) {
+        .contest-head {
+            flex-direction: column;
+            align-items: initial;
+            width: 100%;
+        }
+
+        .contest-btns {
+            margin-top: 10px;
+            width: 100%;
+            flex-direction: row;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block body %}
+
+{% if not nodata %}
+<div class="contest">
+    <div class="contest-head">
+        <div class="contest-heading">
+            <div class="contest-name-open">
+                <span class="contest-name">{{contest.Title | safe}}</span>
+                <span class="host"><i><b style="font-size: 15px; color:rgb(95, 95, 95);">{{contest.ContestType |
+                            safe}}</b></i></span>
+                <span class="contest-{{status.lower() | safe}}">{{status | safe}}</span>
+            </div>
+            <div class="host"><span style="font-size: 15px; text-decoration: underline;">{{contest.HostId |
+                    safe}}</span></div>
+            <div class="tags">
+                {% for tag in tags %}
+                <span class="tag">{{tag.tag | safe}}</span>
+                {% endfor %}
+            </div>
+            <small style="color: rgb(95, 95, 95); font-weight: bold;">{{contest.Entries | safe}} Entries</small>
+            <span class="closes-on">closes on : {{cdate | safe}}</span>
+        </div>
+        <div class="contest-btns">
+            {% if contest.ContestType == 'public' %}
+            <a href="{{url_for('user.ContestEntries',cid=contest.ContestId | safe)}}" class="make-entry-btn">View
+                Entries</a>
+            {% if contest.HasPickedWinner %}
+            <a href="{{url_for('user.ContestWinner',cid=contest.ContestId | safe)}}" class="make-entry-btn">View
+                Winner</a>
+            {% endif %}
+            {% else %}
+            {% if contest.HostId == session.uname %}
+            <a href="{{url_for('user.ContestEntries',cid=contest.ContestId | safe)}}" class="make-entry-btn">View
+                Entries</a>
+            {% if contest.HasPickedWinner %}
+            <a href="{{url_for('user.ContestWinner',cid=contest.ContestId | safe)}}" class="make-entry-btn">View
+                Winner</a>
+            {% endif %}
+            {% endif %}
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="contest-body">
+        <h3 class="description">Contest Info</h3>
+        <p class="description-info" style="text-align:justify">
+            {{contest.Details}}
+        </p>
+        <div class="formats" style="margin-top: 10px; display: flex; flex-wrap: wrap;">
+            <b style="margin-right: 10px;">Accepted formats: </b>
+            {% for format in formats %}
+            <i class="format" style="margin-right: 10px;">{{format.format.upper() | safe}}</i>
+            {% endfor %}
+        </div>
+        {% if status == 'Open' %}
+        <div class="below-btn">
+            <a href="{{url_for('user.Entry',cid=contest.ContestId | safe)}}" class="make-entry-btn">Make Entry</a>
+        </div>
+        {% else %}
+        <div class="below-btn">
+            <button type="button" class="disabled-make-entry-btn" title="Contest is closed!" disabled>Make
+                Entry</button>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% else %}
+<div
+    style="margin-top: 10px; padding: 10px; border: 2px solid #3d3d3d; display: flex; align-items: center; height: 100px;">
+    <h2 style="font-size: 40px; color: #3d3d3d;">Contest has been removed!</h2>
+</div>
+{% endif %}
+{% endblock %}

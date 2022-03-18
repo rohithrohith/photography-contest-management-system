@@ -1,0 +1,255 @@
+{% extends 'template/template.html' %}
+{% block title %}
+Capture | entries
+{% endblock %}
+
+{% block style %}
+<style>
+    .container {
+        padding: 70px 100px 0 100px;
+    }
+
+    .entrie-body {
+        display: flex;
+        margin-top: 20px;
+        width: 100%;
+        justify-content: space-between;
+        align-items: center;
+        height: 50px;
+    }
+
+    .entry-head {
+        text-transform: capitalize;
+        padding: 10px 0;
+        display: block;
+        text-align: center;
+        font-weight: bold;
+    }
+
+    .pick-winner {
+        padding: 10px;
+        border-radius: 5px;
+        font-size: 14px;
+        border: none;
+        cursor: pointer;
+        color: white;
+        background-color: green;
+    }
+
+    .entries {
+        display: flex;
+        flex-direction: column;
+        padding: 10px 0;
+        margin: 10px 0;
+    }
+
+    .entry {
+        padding: 10px;
+        height: 60px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin: 5px;
+        border-radius: 5px;
+        box-shadow: 0 1px 8px 0 rgba(0, 0, 0, 0.2), 0 1px 4px 0 rgba(0, 0, 0, 0.19);
+    }
+
+    .entry-name {
+        overflow: hidden;
+        width: 45%;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .preview-img-container {
+        display: flex;
+        width: fit-content;
+        align-items: center;
+    }
+
+    .preview-img {
+        height: 40px;
+        margin-right: 10px;
+        border-radius: 5px;
+        width: 40px;
+        object-fit: cover;
+    }
+
+    .view-modal {
+        position: fixed;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background: rgba(0, 0, 0, 0.6);
+        z-index: 10;
+        display: none;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .modal-content {
+        width: 90%;
+        height: 90%;
+        background: white;
+        background: white;
+        border-radius: 10px;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .modal-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: 2px solid grey;
+    }
+
+    .header-left {
+        padding: 10px 20px;
+    }
+
+    .header-left .title {
+        font-weight: bold;
+        font-size: 17px;
+    }
+
+    .header-left .user {
+        font-size: 14px;
+        color: #3d3d3d;
+    }
+
+    .modal-closer {
+        font-size: 30px;
+        color: black;
+        width: 50px;
+        display: flex;
+        align-content: center;
+        justify-content: center;
+        cursor: pointer;
+    }
+
+    .img-card {
+        position: relative;
+        flex: 1;
+        padding: 20px;
+        align-items: center;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: scroll;
+    }
+
+    .img {
+        max-width: 400px;
+        max-height: 100%;
+        object-fit: cover;
+    }
+
+    .modal-footer {
+        padding: 10px 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .modal-footer-btn {
+        padding: 10px;
+        color: white;
+        background: black;
+        border-radius: 5px;
+        text-align: center;
+        width: 170px;
+        font-size: 14px;
+        margin: 0 3px;
+    }
+
+    @media screen and (max-width:900px) {
+        .container {
+            padding: 70px 10px 10px 10px;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block body %}
+<div class="view-modal" id="view-modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <div class="header-left">
+                <div class="title">Title</div>
+                <div class="user">user</div>
+            </div>
+            <span class="modal-closer" id="modal-closer" onclick="closeViewImgModal()">&times;</span>
+        </div>
+        <div class="img-card">
+            <img src="/static/images/404.png" alt="" class="img" id="image">
+        </div>
+        <div class="modal-footer">
+            <a href="" class="modal-footer-btn" id="footer-download-btn" download>Download</a>
+            <a href="" class="modal-footer-btn" id="footer-collection-btn">Add to collection</a>
+        </div>
+    </div>
+</div>
+<div class="entries-body">
+    <div class="entrie-body">
+        <div class="tab-left">
+            <h2 class="entry-head"> {{cname.Title | safe}} Entries</h2>
+        </div>
+        <div class="tab-right">
+            {% if session.uname == host.HostId %}
+            {% if not host.HasPickedWinner %}
+            <a href="{{url_for('user.PickWinner',cid=cid | safe)}}" class="pick-winner">Pick Winner</a>
+            {% endif %}
+            {% endif %}
+        </div>
+    </div>
+    <div class="dashboard-content">
+        {% if not nodata %}
+        <div class="entries">
+            {% for entry in data %}
+            <div class="entry"
+                onclick="openImg(`/{{entry.EntryUrl | safe}}`,`{{entry.EntryTitle | safe}}`,`{{entry.UserId | safe}}`,`{{entry.EntryId | safe}}`)">
+                <h4 class="entry-name">{{entry.EntryTitle | safe}}</h4>
+                <span class="username">{{entry.UserId | safe}}</span>
+                <div class="preview-img-container">
+                    <img src="/{{entry.EntryUrl | safe}}" alt="{{entry.EntryTitle | safe}}" class="preview-img"
+                        loading="lazy">
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div
+            style="height: 100px; display: flex;align-items: center; border: 2px grey solid; padding: 10px; color:grey; margin-top: 10px;">
+            <h2>
+                No entries made for this contest!
+            </h2>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block script %}
+<script>
+    const modal = document.getElementById('view-modal')
+    const modalImg = document.getElementById('image')
+
+    function openImg(url, title, user, id) {
+        console.log(id)
+        modal.style.display = "flex"
+        modalImg.setAttribute('src', url)
+        modalImg.setAttribute('alt', title)
+        document.querySelector('.title').textContent = title
+        document.querySelector('.user').textContent = user
+        document.querySelector('#footer-download-btn').setAttribute('href', url)
+        document.querySelector('#footer-collection-btn').setAttribute('href', `/addtocollection/${id}`)
+    }
+
+    function closeViewImgModal() {
+        modal.style.display = "none"
+    }
+</script>
+{% endblock %}

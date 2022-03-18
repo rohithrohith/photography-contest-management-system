@@ -1,0 +1,308 @@
+{% extends 'template/template.html' %}
+{% block title %}
+Register
+{% endblock %}
+
+{% block style %}
+<style>
+    .container {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+
+    .register-brand {
+        position: absolute;
+        top: 20px;
+        left: 20px;
+        font-weight: bold;
+        letter-spacing: 0.1em;
+        display: flex;
+        align-items: center;
+    }
+
+    nav {
+        display: none !important;
+    }
+
+    .register-block {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        min-width: 700px;
+        min-height: fit-content;
+        box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+        margin: 70px 0;
+    }
+
+    .banner-overlay {
+        background: rgba(0, 0, 0, 0.6);
+        position: absolute;
+        top: 0;
+        left: 0;
+        height: 100%;
+        width: 100%;
+        padding: 20px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+    }
+
+    .register-banner {
+        position: relative;
+        background: url("/static/images/signin-register-bg.jpg") no-repeat no-repeat;
+        background-position: center;
+        background-size: cover;
+        color: white;
+    }
+
+    .banner-head {
+        font-size: 40px;
+    }
+
+    .banner-tag {
+        margin: 10px 0 0 0;
+    }
+
+    .banner-p {
+        font-size: 14px;
+    }
+
+    .form-div {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100%;
+    }
+
+    .register-form {
+        display: flex;
+        background: white;
+        justify-content: center;
+        flex-direction: column;
+        padding: 20px;
+        width: 100%;
+        color: black;
+    }
+
+    .register-form h1 {
+        margin-bottom: 10px;
+    }
+
+    .form-control {
+        display: flex;
+        flex-direction: column;
+        position: relative;
+        margin: 15px 0;
+    }
+
+    .form-label {
+        position: absolute;
+        top: 20px;
+        font-size: 14px;
+        pointer-events: none;
+        height: 100%;
+        width: 100%;
+        letter-spacing: 1px;
+        cursor: text;
+        transition: 0.2s ease;
+    }
+
+    .form-input {
+        padding: 15px 10px 5px 0;
+        outline: none;
+        height: 50px;
+        font-size: 16px;
+        border: none;
+        border-bottom: 2px solid var(--themeOrange);
+        width: 100%;
+        border-radius: 0;
+    }
+
+    .form-input:focus {
+        background: white;
+    }
+
+    .form-input:focus+.form-label,
+    .form-input:not(:placeholder-shown)+.form-label {
+        top: 0 !important;
+        font-size: 12px !important;
+    }
+
+    .form-input:not(:placeholder-shown):invalid {
+        border-bottom: red 2px solid;
+    }
+
+    .password-input:not(:placeholder-shown):invalid {
+        border-bottom: var(--themeOrange) 2px solid;
+    }
+
+    .form-input:empty+.form-label {
+        top: 20px;
+        color: black;
+    }
+
+    .links {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .login-button {
+        margin: 10px 0;
+        padding: 10px;
+        background-color: darkorange;
+        border: darkorange 2px solid;
+        color: white;
+        font-weight: bold;
+        letter-spacing: 1px;
+        cursor: pointer;
+        border-radius: 2px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .login-button:hover {
+        background-color: white;
+        color: darkorange;
+    }
+
+    .forgot-password,
+    .register {
+        color: black;
+        margin-top: 10px;
+        width: fit-content;
+        font-size: 0.8rem;
+    }
+
+    .forgot-password:hover,
+    .register:hover {
+        text-decoration: underline;
+    }
+
+    .register-type-btns {
+        height: 50px;
+        display: grid;
+        grid-template-columns: 50% 50%;
+        align-items: center;
+        margin-bottom: 20px;
+        background: whitesmoke;
+    }
+
+    .register-type-btn {
+        margin: 0 2px;
+        height: 100%;
+        font-size: 15px;
+        border: none;
+        background: none;
+        cursor: pointer;
+        border-bottom: 4px solid whitesmoke;
+    }
+
+    .login-button:disabled {
+        background: var(--themeOrange);
+        opacity: 0.8;
+        color: white;
+        cursor: not-allowed;
+    }
+
+    .login-button:disabled:hover {
+        background: var(--themeOrange);
+        color: white;
+        cursor: not-allowed;
+        opacity: 0.8;
+    }
+
+    .active-btn {
+        border-bottom: 4px solid orange;
+        cursor: initial;
+    }
+
+    .loading {
+        animation: spin 1s forwards infinite ease;
+    }
+
+    @keyframes spin {
+        from {
+            transform: rotateZ(0deg);
+        }
+
+        to {
+            transform: rotateZ(360deg);
+        }
+    }
+
+    footer {
+        display: none !important;
+    }
+</style>
+{% endblock %}
+
+{% block body %}
+<a href="/" class="register-brand">CAPTURE
+    <img src="/static/images/darkLogo.svg" style="margin-left: 5px; width: 30px;" alt="logo">
+</a>
+<div class="register-block">
+    <div class="register-banner">
+        <div class="banner-overlay">
+            <h1 class="banner-head">
+                CAPTURE
+            </h1>
+            <h3 class="banner-tag">
+                Join now!
+            </h3>
+            <p class="banner-p">
+                Register to start your Capture journey now.
+            </p>
+        </div>
+    </div>
+    <div class="register-form">
+        <h1>Register</h1>
+        <form method="POST" action="/register" class="form" id="form">
+            <div class="form-control">
+                <input type="text" pattern="[a-z0-9_]{6,}" name="username" id="username" class="form-input"
+                    placeholder=" " required
+                    oninvalid="this.setCustomValidity('Must contain atleast 6 characters, should contain only lowercase,digits and underscore')"
+                    oninput="this.setCustomValidity('')" />
+                <label for="username" class="form-label" id="name">Username
+                </label>
+            </div>
+            <div class="form-control">
+                <input type="email" name="email" id="register-mail" class="form-input" placeholder=" " required />
+                <label for="register-mail" class="form-label" id="name">E-mail
+                </label>
+            </div>
+            <div class="form-control">
+                <input type="password" name="password" id="password"
+                    oninvalid="this.setCustomValidity('must contain 6 or more characters that are of at least one number, and one uppercase and lowercase letter')"
+                    oninput="this.setCustomValidity('')" pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{6,}"
+                    class="form-input password-input" placeholder=" " required />
+                <label for="password" class="form-label">Password</label>
+            </div>
+
+            <div class="form-control">
+                <input type="password" name="confirm-password"
+                    oninvalid="this.setCustomValidity('must contain 6 or more characters that are of at least one number, and one uppercase and lowercase letter')"
+                    oninput="this.setCustomValidity('')" pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{6,}"
+                    id="confirm-password" class="form-input password-input" placeholder=" " required />
+                <label for="confirm-password" class="form-label">Confirm password</label>
+            </div>
+            <button class="login-button" type="submit" id="submit-btn">Register</button>
+            <div class="links">
+                <a href="/signin" class="register">Already got an account? signin here.</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block script %}
+<script>
+    const registerForm = document.getElementById('form')
+    registerForm.addEventListener('submit', () => {
+        document.getElementById('submit-btn').disabled = true
+        document.getElementById('submit-btn').innerHTML = `<i class="fas fa-spinner loading"></i>Please wait...`
+    }, false)
+</script>
+{% endblock %}

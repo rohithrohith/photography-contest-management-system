@@ -1,0 +1,254 @@
+{% extends 'template/template.html' %}
+{% block title %}
+Capture | Contests
+{% endblock %}
+
+{% block style %}
+<style>
+    .container {
+        padding: 80px 100px 10px 100px;
+    }
+
+    .view-modal {
+        position: fixed;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background: rgba(0, 0, 0, 0.6);
+        z-index: 10;
+        display: none;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .modal-closer {
+        position: absolute;
+        top: 5px;
+        right: 10px;
+        font-size: 30px;
+        color: white;
+        width: 50px;
+        z-index: 11;
+        display: flex;
+        align-content: center;
+        justify-content: center;
+        mix-blend-mode: difference;
+        cursor: pointer;
+    }
+
+    .img-card {
+        width: 90%;
+        background: white;
+        border-radius: 10px;
+        height: 90%;
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: scroll;
+        padding: 20px;
+    }
+
+    .img {
+        max-width: 400px;
+        max-height: 100%;
+        object-fit: cover;
+    }
+
+    .pick-winner-form {
+        margin-top: 10px;
+    }
+
+    .form-control {
+        width: 100%;
+        height: 60px;
+        padding: 10px;
+        box-shadow: 0 1px 4px 0 rgba(0, 0, 0, 0.2), 0 1px 2px 0 rgba(0, 0, 0, 0.19);
+        display: grid;
+        grid-template-columns: calc(100% - 100px) 100px;
+        border-radius: 5px;
+        align-items: center;
+        margin-bottom: 10px;
+    }
+
+    .form-control:hover,
+    .form-control:focus-within {
+        box-shadow: 0 1px 14px 0 rgba(0, 0, 0, 0.2), 0 1px 8px 0 rgba(0, 0, 0, 0.19);
+    }
+
+    .input-div {
+        display: grid;
+        width: 100%;
+        grid-template-columns: 20px auto;
+        align-content: center;
+    }
+
+    .radio-div {
+        position: relative;
+        height: 20px;
+        margin: auto 2px;
+    }
+
+    .radio-mark {
+        position: absolute;
+        top: 0;
+        width: 20px;
+        height: 20px;
+        border-radius: 100%;
+        left: 0;
+        background: grey;
+        pointer-events: none;
+    }
+
+    .radio-input {
+        height: 20px;
+        margin: auto 0 auto 0;
+        width: 20px;
+        display: block;
+    }
+
+    .radio-input:checked~.radio-mark {
+        background: var(--themeOrange);
+    }
+
+    .title {
+        width: 40%;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .username {
+        font-size: 14px;
+        margin-left: 50px;
+    }
+
+    .form-label {
+        height: 100%;
+        padding-left: 20px;
+        cursor: pointer;
+        display: flex;
+        align-content: center;
+    }
+
+    .view-details {
+        display: flex;
+        align-content: center;
+    }
+
+    .image {
+        height: 40px;
+        width: 40px;
+        margin-right: 10px;
+    }
+
+    .view {
+        padding: 5px 10px;
+        border-radius: 5px;
+        border: none;
+        background: none;
+    }
+
+    .confirm-btn {
+        background: #3d3d3d;
+        margin-top: 10px;
+        color: white;
+        cursor: pointer;
+        padding: 10px;
+        border-radius: 5px;
+        border: 1px solid #3d3d3d;
+    }
+
+    .confirm-btn:hover {
+        background: white;
+        color: #3d3d3d;
+    }
+
+    @media screen and (max-width:750px) {
+
+        .title {
+            display: none;
+        }
+
+        .username {
+            margin-left: 10px;
+        }
+    }
+
+    @media screen and (max-width:900px) {
+        .container {
+            padding: 70px 10px 10px 10px;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block body %}
+<div class="view-modal" id="view-modal">
+    <span class="modal-closer" id="modal-closer" onclick="closeViewImgModal()">&times;</span>
+    <div class="img-card">
+        <img src="" alt="" class="img" id="image">
+    </div>
+</div>
+<h1>Pick winner</h1>
+<div class="pick-winner-page">
+    {% if not isPicked %}
+    {% if not nodata %}
+    <form class="pick-winner-form" id="form" method="POST">
+        {% for entry in entries %}
+        <div class="form-control">
+            <div class="input-div">
+                <div class="radio-div">
+                    <input type="radio" class="radio-input" id="{{entry.EntryId | safe}}"
+                        value="{{entry.EntryId | safe}}" name="winner" required />
+                    <span class="radio-mark"></span>
+                </div>
+                <input type="hidden" name="username" value="{{entry.UserId | safe}}">
+                <label for="{{entry.EntryId | safe}}" class="form-label">
+                    <h4 class="title">{{entry.EntryTitle | safe}}</h4>
+                    <div class="user">
+                        <span class="username">{{entry.UserId | safe}}</span>
+                    </div>
+                </label>
+            </div>
+            <div class="view-details">
+                <img src="/{{entry.EntryUrl | safe}}" alt="{{entry.EntryTitle | safe}}" class="image" />
+                <button type="button" class="view" onclick="openImage(`/{{entry.EntryUrl | safe}}`)"><i
+                        class="fas fa-chevron-circle-right" style="font-size: 20px; cursor: pointer;"></i></button>
+            </div>
+        </div>
+        {% endfor %}
+        <input type="submit" value="Confirm winner" id="confirm-btn" class="confirm-btn">
+    </form>
+    {% else %}
+    <div style="color: grey; margin: 10px 10px 10px 0;padding: 10px 10px 10px 0; ">
+        <h2>Contest have no entries!</h2>
+    </div>
+    {% endif %}
+    {% else %}
+    <div style="color: grey;">
+        <h2>You already picked <i style="color: #3d3d3d;">{{data.WinnerId | safe}}'s</i> Entry <i
+                style="color: #3d3d3d;">{{data.EntryId | safe}}</i> as
+            winner!</h2>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block script %}
+<script>
+    const modal = document.getElementById('view-modal')
+    const modalImg = document.getElementById('image')
+
+    function openImage(url) {
+        modal.style.display = "flex"
+        modalImg.setAttribute('src', url)
+    }
+
+    function closeViewImgModal() {
+        modal.style.display = "none"
+    }
+</script>
+{% endblock %}

@@ -1,0 +1,280 @@
+<head>
+    <style>
+        * {
+            padding: 0px;
+            margin: 0px;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body,
+        html {
+            height: 100%;
+        }
+
+        a {
+            text-decoration: none;
+            color: black;
+        }
+
+        ul,
+        ol {
+            list-style: none;
+        }
+
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 5;
+            display: flex;
+            justify-content: space-between;
+            background: white;
+            align-items: center;
+            padding: 0 100px;
+            height: 70px;
+            transition: background 0.2s ease;
+            box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+        }
+
+        .brand {
+            color: black;
+            letter-spacing: 1px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+        }
+
+        .logo-img {
+            margin-left: 5px;
+            transition: transform 1.2s ease;
+        }
+
+        .brand:hover .logo-img {
+            transform: rotateZ(360deg);
+        }
+
+        .search-bar {
+            margin-right: 20px;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 10px;
+            border-radius: 5px;
+            width: 55vw;
+            display: flex;
+            background: whitesmoke;
+        }
+
+        .search-input {
+            margin-right: 10px;
+            background: none;
+            color: black;
+            padding: 5px;
+            height: 100%;
+            border: none;
+            outline: none;
+            width: 100%;
+        }
+
+        .search-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+        }
+
+        .search-icon {
+            font-size: 14px;
+            color: black;
+        }
+
+        .nav-right {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+        }
+
+        .nav-list {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+        }
+
+        .nav-item {
+            padding: 3px;
+            margin-right: 10px;
+            height: 100%;
+        }
+
+        .nav-link {
+            color: black;
+            text-decoration: none;
+            font-size: 14px;
+            display: inline-block;
+            transition: padding 0.2s ease;
+        }
+
+        .nav-link:hover {
+            border-bottom: 4px solid var(--themeOrange);
+            padding-bottom: 5px;
+        }
+
+        .ham-menu,
+        .nav-close {
+            background: none;
+            color: black;
+            border: none;
+            cursor: pointer;
+        }
+
+        .ham-menu {
+            display: none;
+        }
+
+        .slide-nav {
+            background: white;
+            position: fixed;
+            height: 100%;
+            text-align: left;
+            right: 0;
+            top: 0;
+            width: 250px;
+            z-index: 20;
+            padding-top: 15px;
+            box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.2), 0 4px 8px 0 rgba(0, 0, 0, 0.19);
+            width: 0;
+            transition: 0.3s ease-in-out;
+        }
+
+        .opened-slide-nav {
+            width: 250px;
+        }
+
+        .slide-nav-link {
+            display: inline-block;
+            transition: 0.2s ease-in-out;
+        }
+
+        .slide-nav-item {
+            width: fit-content;
+            padding-left: 5px;
+            margin: 10px 0 10px 30px;
+            border-left: white 5px solid;
+        }
+
+        .slide-nav-item:hover {
+            border-left: var(--themeOrange) 5px solid;
+        }
+
+        .slide-nav-item:hover .slide-nav-link {
+            margin-left: 10px;
+        }
+
+
+        @media screen and (max-width:900px) {
+            nav {
+                padding: 0 10px;
+            }
+        }
+
+        @media screen and (max-width:700px) {
+            .ham-menu {
+                display: block;
+            }
+
+            .nav-right .nav-item {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<nav class="navbar" id="navbar">
+    <div class="heading">
+        <a href="/" class="brand">Capture
+            <img src="/static/images/darkLogo.svg" style="width: 30px;" alt="capture logo" class="logo-img">
+        </a>
+    </div>
+    <div class="nav-right">
+        <ul class="nav-list">
+            <li class="nav-item explore-link">
+                <a href="/explore" class="nav-link">Explore</a>
+            </li>
+            <li class="nav-item contests-link">
+                <a href="/contests" class="nav-link">Participate</a>
+            </li>
+            {% if not session.isLogedIn %}
+            <li class="nav-item">
+                <a href="/signin" class="nav-link">Signin</a>
+            </li>
+            <li class="nav-item">
+                <a href="/register" class="nav-link">Register</a>
+            </li>
+            {% else %}
+            <li class="nav-item host-link">
+                <a href="/createcontest" class="nav-link">Host contest</a>
+            </li>
+
+            <li class="nav-item collections-link">
+                <a href="{{url_for('user.Collections',uname=session.uname | safe)}}" class="nav-link">My collections</a>
+            </li>
+            <li class="nav-item dashboard-link">
+                <a href="/dashboard/{{session.uname}}" class="nav-link">{{session.uname | safe}} <i
+                        class="fas fa-user"></i></a>
+            </li>
+            <li class="nav-item">
+                <a href="/logout" class="nav-link">Logout</a>
+            </li>
+            {% endif %}
+        </ul>
+        <button id="ham-menu" class="ham-menu" onclick="slidenav();"><i class="fas fa-bars fa-2x"></i></button>
+    </div>
+</nav>
+
+<div class="slide-nav" id="slide-nav">
+    <button class="nav-close" style="font-size: 30px; padding-right: 10px; text-align: right; width: 100%;"
+        id="nav-close" onclick="closenav()">&times;</button>
+    <ul class="slide-nav-list">
+        <li class="slide-nav-item explore-link">
+            <a href="/explore" class="slide-nav-link">Explore</a>
+        </li>
+        <li class="slide-nav-item">
+            <a href="/contests" class="slide-nav-link contest-link">Participate</a>
+        </li>
+        {% if not session.isLogedIn %}
+        <li class="slide-nav-item">
+            <a href="/signin" class="slide-nav-link">Signin</a>
+        </li>
+        <li class="slide-nav-item">
+            <a href="/register" class="slide-nav-link">Register</a>
+        </li>
+        {% else %}
+        <li class="slide-nav-item">
+            <a href="/createcontest" class="slide-nav-link host-link">Host contest</a>
+        </li>
+
+        <li class="slide-nav-item collections-link">
+            <a href="{{url_for('user.Collections',uname=session.uname | safe)}}" class="slide-nav-link">My
+                collections</a>
+        </li>
+        <li class="slide-nav-item">
+            <a href="/dashboard/{{session.uname}}" class="slide-nav-link dashboard-link">{{session.uname | safe}} <i
+                    class="fas fa-user"></i></a>
+        </li>
+        <li class="slide-nav-item">
+            <a href="/logout" class="slide-nav-link">Logout</a>
+        </li>
+        {% endif %}
+    </ul>
+</div>
+
+<script>
+    function slidenav() {
+        document.getElementById('slide-nav').classList.toggle('opened-slide-nav');
+    }
+
+    function closenav() {
+        document.getElementById('slide-nav').classList.toggle('opened-slide-nav');
+    }
+</script>

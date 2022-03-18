@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Turret+Road&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet">
+    <style>
+        * {
+            padding: 0;
+            margin: 0;
+            box-sizing: border-box;
+        }
+
+        a {
+            color: #3d3d3d;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            padding: 30px;
+        }
+
+        .error-header {
+            display: flex;
+            align-items: center;
+            height: 50vh;
+            max-width: 600px;
+        }
+
+        .error-img {
+            width: 100%;
+        }
+
+        .back-to-home-btn {
+            border: black 2px solid;
+            padding: 10px;
+            cursor: pointer;
+            display: inline-block;
+            background: black;
+            color: white;
+            text-decoration: none;
+            margin-top: 10px;
+            border-radius: 5px;
+        }
+
+        .back-to-home-btn:hover {
+            background: white;
+            color: black;
+        }
+    </style>
+</head>
+
+<body>
+    {% if e.code == 401 or e.code == 403 or e.code == 404 or e.code == 400 %}
+    <div class="error-header">
+        <img src="/static/images/{{e.code | safe}}.png" alt="" class="error-img">
+    </div>
+    {% else %}
+    <div class="error-header">
+        <h1 style="color: darkorange;font-size: 130px;">{{e.code | safe}}</h1>
+    </div>
+    {% endif %}
+    <div class="error-info">
+        <h1>Oops! {{e.name}}</h1>
+        {% if e.code == 404 %}
+        <p>This page doesn't exists!</p>
+        {% endif %}
+        {% if e.code == 401 %}
+        <p>You are Unauthorized to access this page!</p>
+        {% endif %}
+        {% if e.code == 403 %}
+        <p>This page is forbidden</p>
+        {% endif %}
+        {% if e.code == 400 %}
+        <p>Bad request!</p>
+        {% endif %}
+        <span onclick="history.back();" class="back-to-home-btn">Go back</span>
+    </div>
+</body>
+
+</html>

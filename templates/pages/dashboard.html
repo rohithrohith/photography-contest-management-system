@@ -1,0 +1,508 @@
+{% extends 'template/template.html' %}
+{% block title %}
+Capture | Dashboard
+{% endblock %}
+
+{% block style %}
+<style>
+    .container {
+        padding-top: 80px;
+    }
+
+    .dashboard-head {
+        height: 350px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        background-color: white;
+        color: black;
+    }
+
+    .user-img {
+        border-radius: 50%;
+        width: 150px;
+        height: 150px;
+        margin-bottom: -10px;
+    }
+
+    .head-right {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .user-info {
+        display: block;
+    }
+
+    .user-email {
+        margin-bottom: 10px;
+    }
+
+    .change-password {
+        padding: 10px 10px;
+        background-color: #3d3d3d;
+        color: white;
+        border: #3d3d3d solid 2px;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+
+    .change-password:hover {
+        color: #3d3d3d;
+        background-color: white;
+    }
+
+    .dashboard-body {
+        margin-top: 10px;
+    }
+
+    .dashboard-tab {
+        display: flex;
+        height: fit-content;
+        background-color: whitesmoke;
+    }
+
+    .dashboard-section-btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 15px;
+        width: 200px;
+        height: 100%;
+        cursor: pointer;
+        border-bottom: whitesmoke solid 2px;
+        text-align: center;
+    }
+
+    .participated {
+        margin-left: 20px;
+    }
+
+    .hosted {
+        background: whitesmoke;
+        border-bottom: whitesmoke solid 2px;
+    }
+
+    .active-btn {
+        background: rgb(230, 230, 230);
+        border-bottom: black solid 2px;
+    }
+
+    .contests {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        padding: 10px;
+        margin: 10px;
+    }
+
+    .no-data {
+        margin: 10px;
+        padding: 10px;
+    }
+
+    .no-data-btn {
+        background: #3d3d3d;
+        color: white;
+        border-radius: 5px;
+        border: 1px solid #3d3d3d;
+        padding: 10px;
+        display: block;
+        width: fit-content;
+        font-size: 14px;
+        margin-top: 10px;
+        transition: 0.1s ease-in-out;
+    }
+
+    .no-data-btn:hover {
+        background: white;
+        color: #3d3d3d;
+    }
+
+    .contest {
+        padding: 10px;
+        height: 210px;
+        display: grid;
+        grid-template-rows: 110px 30px auto;
+        margin: 5px;
+        border-radius: 5px;
+        box-shadow: 0 1px 8px 0 rgba(0, 0, 0, 0.2), 0 1px 4px 0 rgba(0, 0, 0, 0.19);
+    }
+
+    .contest-image {
+        background: rgb(240, 240, 240);
+        height: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .contest-first-letter {
+        font-size: 80px;
+        color: rgb(138, 138, 138);
+    }
+
+    .contest-head {
+        background: rgb(240, 240, 240);
+        border-radius: 5px;
+    }
+
+    .contest-body,
+    .contest-head,
+    .contest-footer {
+        padding: 10px;
+    }
+
+    .contest-body {
+        margin-top: 5px;
+    }
+
+    .contest-name {
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        text-transform: capitalize;
+        max-width: 150px;
+    }
+
+    .contest-body,
+    .contest-footer {
+        display: flex;
+        align-items: center;
+    }
+
+    .contest-footer {
+        justify-content: space-between;
+    }
+
+    .open-contest-btn {
+        padding: 5px 10px;
+        color: white;
+        font-size: 14px;
+        background-color: #3d3d3d;
+        border-radius: 5px;
+        text-decoration: none;
+        letter-spacing: 1px;
+        border: none;
+    }
+
+    .inactive-db-section {
+        display: none;
+    }
+
+    .change-password-modal {
+        background: rgba(0, 0, 0, 0.8);
+        position: fixed;
+        height: 100%;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        z-index: 20;
+    }
+
+    .modal-close-btn {
+        color: white;
+        position: fixed;
+        cursor: pointer;
+        top: 20px;
+        right: 20px;
+        padding: 10px;
+        font-size: 40px;
+    }
+
+    .change-password-form {
+        background: white;
+        border-radius: 10px;
+        padding: 20px;
+        width: 300px;
+    }
+
+    .form-control {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        position: relative;
+        margin: 15px 0;
+    }
+
+    .form-label {
+        position: absolute;
+        top: 20px;
+        font-size: 14px;
+        pointer-events: none;
+        height: 100%;
+        width: 100%;
+        letter-spacing: 1px;
+        cursor: text;
+        transition: 0.2s ease;
+    }
+
+    .form-input {
+        padding: 15px 10px 5px 0;
+        width: 100%;
+        outline: none;
+        height: 50px;
+        font-size: 16px;
+        border: none;
+        border-bottom: 2px solid var(--themeOrange);
+        width: 100%;
+        border-radius: 0;
+    }
+
+    .form-input:focus {
+        background: white;
+    }
+
+    .form-input:focus+.form-label,
+    .form-input:not(:placeholder-shown)+.form-label {
+        top: 0 !important;
+        font-size: 12px !important;
+    }
+
+    .form-input:not(:placeholder-shown):invalid {
+        border-bottom: red 2px solid;
+    }
+
+    .password-input:not(:placeholder-shown):invalid {
+        border-bottom: var(--themeOrange) 2px solid;
+    }
+
+    .form-input:empty+.form-label {
+        top: 20px;
+        color: black;
+    }
+
+    .change-password-btn {
+        background: black;
+        padding: 10px;
+        text-align: center;
+        border: none;
+        color: white;
+        cursor: pointer;
+        width: fit-content;
+    }
+
+    .dashboard-link {
+        display: none !important;
+    }
+
+    .verified-icon {
+        position: relative;
+        color: var(--themeOrange);
+        cursor: pointer;
+    }
+
+    .verified-icon::after {
+        content: 'Verified';
+        background: #3d3d3d;
+        padding: 3px 5px;
+        border-radius: 5px;
+        font-size: 12px;
+        position: absolute;
+        left: calc(100% + 5px);
+        top: 0;
+        display: none;
+        color: white;
+    }
+
+    .verified-icon:hover::after {
+        display: block;
+    }
+
+    footer {
+        display: none;
+    }
+
+    @media screen and (max-width:900px) {
+        .contests {
+            grid-template-columns: repeat(3, 1fr);
+        }
+    }
+
+    @media screen and (max-width:650px) {
+        .contests {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+
+    @media screen and (max-width:450px) {
+        .contests {
+            grid-template-columns: repeat(1, 1fr);
+        }
+
+        .dashboard-section-btn {
+            width: 120px;
+            padding: 10px;
+            font-size: 14px;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block body %}
+<div class="change-password-modal" id="change-password-modal">
+    <span class="modal-close-btn" id="modal-close-btn" title="Close">&times;</span>
+    <form action="{{url_for('user.ChangePassword',uid=session.uname | safe)}}" class="change-password-form"
+        method="post">
+        <h2 style="margin-bottom: 20px;">Change password</h2>
+        <div class="form-control">
+            <input type="password" class="form-input password-input" placeholder=" " name="current-password"
+                id="current-password" required>
+            <label for="current-password" class="form-label">Enter your password</label>
+        </div>
+        <div class="form-control">
+            <input type="password" class="form-input password-input" placeholder=" " name="new-password"
+                id="new-password" required>
+            <label for="new-password" class="form-label">Enter new password</label>
+        </div>
+        <div class="form-control">
+            <input type="password" class="form-input password-input" placeholder=" " name="confirm-new-password"
+                id="confirm-new-password" required>
+            <label for="confirm-new-password" class="form-label">Confirm new password</label>
+        </div>
+        <div class="form-control">
+            <input type="submit" value="Change password" class="change-password-btn">
+        </div>
+    </form>
+</div>
+<div class="dashboard-head">
+    <div class="head-left">
+        <img src="data:image/png;base64,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"
+            alt="" class="user-img" />
+    </div>
+    <div class="head-right">
+        <span class="user-info">Username: {{data.UserName | safe}}
+            {% if data.IsVerified %}
+            <span style="color: var(--themeOrange);cursor: pointer;" class="verified-icon"><i
+                    class="fas fa-check-circle"></i></span>
+            {% else %}
+            <span style="color: red; font-size: 12px; padding: 3px; border-radius: 10px;"><i
+                    class="fas fa-times-circle"></i></span><a
+                href="{{url_for('user.VerifyAccount',uname=session.uname | safe)}}"
+                style="font-size: 12px; margin-left: 5px; color: green; border: green 1px solid; padding: 2px; border-radius: 5px;">Verify
+                now</a>
+            {% endif %}
+        </span>
+        <span class="user-info user-email" style="margin-top: 5px;">Email: {{data.MailId | safe}}</span>
+        <div class="password">
+            <button class="change-password" id="change-password-btn">Change Password</button>
+        </div>
+    </div>
+</div>
+<div class="dashboard-body">
+    <div class="dashboard-tab">
+        <div class="tab-left">
+            <spam class="participated dashboard-section-btn active-btn" id="participated-btn">Participated Contests
+            </spam>
+        </div>
+        <div class="tab-right">
+            <spam class="hosted dashboard-section-btn" id="hosted-btn">Hosted contests</spam>
+        </div>
+    </div>
+    <div class="dashboard-content">
+        <div id="participated-section">
+            {% if not pnodata %}
+            <div class="contests">
+                {% for contest in pcontests %}
+                <div class="contest">
+                    <div class="contest-head">
+                        <div class="contest-image">
+                            <span class="contest-first-letter">{{contest.Title[0] | safe}}</span>
+                        </div>
+                    </div>
+                    <div class="contest-body">
+                        <h3 class="contest-name" title="{{contest.Title | safe}}">{{contest.Title|safe}}</h3>
+                    </div>
+                    <div class="contest-footer">
+                        <a href="{{url_for('user.Contest',cid=contest.ContestId | safe)}}"
+                            class="open-contest-btn">view</a>
+                        <small style="color: rgb(95, 95, 95); font-weight: bold;">{{contest.Entries | safe}}
+                            entries</small>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="no-data">
+                <h2 style="color: grey;">You haven't participated in any contests!
+                </h2>
+                <a href="{{url_for('user.Contests')}}" class="no-data-btn">Participate</a>
+            </div>
+            {% endif %}
+        </div>
+        <div class="inactive-db-section" id="hosted-section">
+            {% if not hnodata %}
+            <div class="contests">
+                {% for contest in hcontests %}
+                <div class="contest">
+                    <div class="contest-head">
+                        <div class="contest-image">
+                            <span class="contest-first-letter">{{contest.Title[0]|safe}}</span>
+                        </div>
+                    </div>
+                    <div class="contest-body">
+                        <h3 class="contest-name" title="{{contest.Title | safe}}">{{contest.Title|safe}}</h3>
+                    </div>
+                    <div class="contest-footer">
+                        <a href="{{url_for('user.Contest',cid=contest.ContestId | safe)}}"
+                            class="open-contest-btn">view</a>
+                        <small style="color: rgb(95, 95, 95); font-weight: bold;">{{contest.Entries | safe}}
+                            entries</small>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="no-data">
+                <h2 style="color: grey;">You haven't hosted any contests!</h2>
+                <a href="{{url_for('user.CreateContest')}}" class="no-data-btn">Host now</a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block script %}
+<script>
+    const participatedBtn = document.getElementById('participated-btn');
+    const hostedBtn = document.getElementById('hosted-btn');
+    const hostedSection = document.getElementById('hosted-section');
+    const participatedSection = document.getElementById('participated-section');
+    const modalCloseBtn = document.getElementById('modal-close-btn')
+    const modal = document.getElementById('change-password-modal')
+    const changePasswordBtn = document.getElementById('change-password-btn')
+
+    changePasswordBtn.addEventListener('click', () => {
+        modal.style.display = 'flex'
+    }, false)
+
+    modalCloseBtn.addEventListener('click', () => {
+        modal.style.display = 'none'
+    }, false)
+
+
+    hostedBtn.addEventListener('click', () => {
+        participatedSection.classList.add('inactive-db-section')
+        hostedSection.classList.remove('inactive-db-section')
+        hostedBtn.classList.add('active-btn')
+        participatedBtn.classList.remove('active-btn')
+    }, false)
+
+
+    participatedBtn.addEventListener('click', () => {
+        hostedSection.classList.add('inactive-db-section')
+        participatedSection.classList.remove('inactive-db-section')
+        participatedBtn.classList.add('active-btn')
+        hostedBtn.classList.remove('active-btn')
+    }, false)
+
+
+</script>
+{% endblock %}

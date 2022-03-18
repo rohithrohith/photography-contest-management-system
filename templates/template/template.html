@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0,user-scalable=0">
+    <title>
+        {% block title %}{% endblock %}
+    </title>
+    <script src="https://kit.fontawesome.com/b5f6f82057.js" crossorigin="anonymous"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet">
+    <link rel="shortcut icon" href="/static/images/favicon.ico" type="image/x-icon">
+    <style>
+        :root {
+            --themeOrange: darkorange;
+        }
+
+        * {
+            padding: 0;
+            margin: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins'sans-serif;
+            user-select: Darkorange;
+        }
+
+        ::-moz-selection {
+            color: white;
+            background: var(--themeOrange);
+        }
+
+        ::selection {
+            color: white;
+            background: var(--themeOrange);
+        }
+
+        html,
+        body {
+            height: 100%;
+            width: 100%;
+        }
+
+        ::-webkit-scrollbar {
+            display: none;
+        }
+
+        .container {
+            padding-top: 70px;
+            height: 100%;
+        }
+
+        .loading {
+            position: fixed;
+            display: none;
+            z-index: 10;
+            align-items: center;
+            justify-content: center;
+            top: 0;
+            left: 0;
+            height: 100%;
+            width: 100%;
+            background: rgba(0, 0, 0, 0.95);
+            color: white;
+        }
+
+        a {
+            text-decoration: none;
+            color: black;
+        }
+
+        .page-head {
+            font-size: 20px;
+        }
+
+        .flashes {
+            color: white;
+            position: fixed;
+            display: flex;
+            gap: 5px;
+            flex-direction: column;
+            bottom: 30px;
+            left: 30px;
+            z-index: 50;
+            box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+            border-radius: 5px;
+        }
+
+        .msg {
+            padding: 10px;
+            border-radius: 5px;
+            font-size: 12px;
+        }
+
+        .error {
+            background: rgb(252, 38, 38);
+        }
+
+        .success {
+            background: green;
+        }
+
+        footer {
+            width: 100%;
+            margin-left: -100px;
+            margin-top: 10px;
+            height: 100px;
+            position: absolute;
+            text-align: center;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: 10px;
+            background: #ddd;
+        }
+
+        @media screen and (max-width:900px) {
+            footer {
+                margin-left: -10px;
+            }
+        }
+    </style>
+    {% block style %}
+    {% endblock %}
+</head>
+
+<body>
+    {% include 'includes/_navbar.html' %}
+    <div class="container">
+        {% block body %}
+        {% endblock %}
+        <footer>
+            <div style="font-weight: bold; font-size: 25px;">Capture</div><small style="margin: 0 10px;">By</small><img
+                src="/static/images/Group 1.png" width="20px" alt="">
+        </footer>
+    </div>
+
+    <div class="loading" id="loading">
+        <h1>Loading...</h1>
+    </div>
+
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+    <ul class="flashes" id="flashes">
+        {% for category, message in messages %}
+        <li class="msg {{category}}">{{ message }}</li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+    {% endwith %}
+
+
+    <script>
+        const flashes = document.getElementById('flashes')
+        if (flashes != null) {
+            setTimeout(() => {
+                flashes.remove()
+            }, 3000)
+        }
+
+
+        function Flash(txt) {
+            const ele = document.createElement('ul')
+            ele.classList.add('flashes')
+            const child = document.createElement('li')
+            child.classList.add('msg')
+            child.classList.add('error')
+            child.textContent = txt
+            ele.appendChild(child)
+            console.log(ele)
+            document.body.appendChild(ele)
+            setTimeout(() => {
+                ele.remove()
+            }, 3000)
+        }
+
+
+        function loading() {
+            document.getElementById('loading').style.display = 'flex';
+        }
+
+        function setFooter() {
+            document.querySelector('footer').style.top = document.documentElement.scrollHeight - 100 + "px"
+        }
+
+        window.onload = setFooter
+        window.onresize = setFooter
+    </script>
+
+    {% block script %}
+    {% endblock %}
+</body>
+
+</html>
